@@ -1,69 +1,195 @@
-<div class="container">
-  <h1>Statistics Dashboard</h1>
-  <p class="subtitle">Analyzing Adel's temporal patterns</p>
+<div class="statistics-page">
+  <!-- Page Header -->
+  <header class="page-header">
+    <h1 class="page-title">Statistics Dashboard</h1>
+    <p class="page-subtitle">Analyzing Adel's temporal patterns and arrival trends</p>
+  </header>
 
+  <!-- Loading State -->
   @if (loading()) {
-    <div class="loading">Loading statistics...</div>
-  }
-
-  @if (error()) {
-    <div class="alert alert-error">{{ error() }}</div>
-  }
-
-  @if (stats()) {
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-value">{{ stats()!.overall.totalEntries }}</div>
-        <div class="stat-label">Total Entries</div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-value">{{ stats()!.overall.averageDelay }} min</div>
-        <div class="stat-label">Average Delay</div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-value">{{ stats()!.overall.medianDelay }} min</div>
-        <div class="stat-label">Median Delay</div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-value">{{ stats()!.overall.onTimePercentage | number:'1.0-1' }}%</div>
-        <div class="stat-label">On Time (≤5 min)</div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-value">{{ stats()!.overall.maxDelay }} min</div>
-        <div class="stat-label">Maximum Delay</div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-value">{{ getTrendIcon() }}</div>
-        <div class="stat-label">
-          @if (stats()!.recentTrend.improving) {
-            Improving!
-          } @else {
-            Getting worse...
-          }
-        </div>
+    <div class="loading-container">
+      <div class="skeleton-grid">
+        @for (i of [1, 2, 3, 4, 5, 6]; track i) {
+          <div class="skeleton-card">
+            <div class="skeleton-icon"></div>
+            <div class="skeleton-label"></div>
+            <div class="skeleton-value"></div>
+          </div>
+        }
       </div>
     </div>
+  }
 
-    @if (stats()!.byDay.length > 0) {
-      <div class="section">
-        <h2>By Day of Week</h2>
-        <div class="day-stats">
-          @for (day of stats()!.byDay; track day.dayOfWeek) {
-            <div class="day-row">
-              <span class="day-name">{{ day.dayName }}</span>
-              <div class="bar-container">
-                <div class="bar" [style.width.%]="(day.averageDelay / stats()!.overall.maxDelay) * 100"></div>
-              </div>
-              <span class="day-value">{{ day.averageDelay }} min ({{ day.count }})</span>
-            </div>
-          }
+  <!-- Error State -->
+  @if (error()) {
+    <div class="alert alert-error">
+      <span class="error-icon">⚠️</span>
+      {{ error() }}
+    </div>
+  }
+
+  <!-- Statistics Content -->
+  @if (stats()) {
+    <!-- Key Metrics Grid -->
+    <section class="metrics-section">
+      <h2 class="section-title">Key Metrics</h2>
+      <div class="stats-grid">
+        <!-- Total Entries Card -->
+        <div class="stat-card">
+          <div class="stat-icon">📊</div>
+          <div class="stat-content">
+            <span class="stat-label">Total Entries</span>
+            <span class="stat-value">{{ stats()!.overall.totalEntries }}</span>
+          </div>
+        </div>
+
+        <!-- Average Delay Card -->
+        <div class="stat-card" [class.status-warning]="stats()!.overall.averageDelay > 10" [class.status-success]="stats()!.overall.averageDelay <= 5">
+          <div class="stat-icon">⏱️</div>
+          <div class="stat-content">
+            <span class="stat-label">Average Delay</span>
+            <span class="stat-value">{{ stats()!.overall.averageDelay }}<span class="stat-unit">min</span></span>
+          </div>
+          <div class="stat-indicator" [class.indicator-good]="stats()!.overall.averageDelay <= 5" [class.indicator-warning]="stats()!.overall.averageDelay > 5 && stats()!.overall.averageDelay <= 10" [class.indicator-bad]="stats()!.overall.averageDelay > 10">
+            @if (stats()!.overall.averageDelay <= 5) {
+              <span class="indicator-icon">✓</span>
+            } @else if (stats()!.overall.averageDelay <= 10) {
+              <span class="indicator-icon">○</span>
+            } @else {
+              <span class="indicator-icon">!</span>
+            }
+          </div>
+        </div>
+
+        <!-- Median Delay Card -->
+        <div class="stat-card">
+          <div class="stat-icon">📈</div>
+          <div class="stat-content">
+            <span class="stat-label">Median Delay</span>
+            <span class="stat-value">{{ stats()!.overall.medianDelay }}<span class="stat-unit">min</span></span>
+          </div>
+        </div>
+
+        <!-- On-Time Percentage Card -->
+        <div class="stat-card stat-card-highlight" [class.status-success]="stats()!.overall.onTimePercentage >= 70" [class.status-warning]="stats()!.overall.onTimePercentage >= 40 && stats()!.overall.onTimePercentage < 70" [class.status-error]="stats()!.overall.onTimePercentage < 40">
+          <div class="stat-icon">🎯</div>
+          <div class="stat-content">
+            <span class="stat-label">On Time (≤5 min)</span>
+            <span class="stat-value stat-value-large">{{ stats()!.overall.onTimePercentage | number:'1.0-1' }}<span class="stat-unit">%</span></span>
+          </div>
+          <div class="progress-ring">
+            <svg viewBox="0 0 36 36" class="circular-chart">
+              <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+              <path class="circle" [attr.stroke-dasharray]="stats()!.overall.onTimePercentage + ', 100'" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            </svg>
+          </div>
+        </div>
+
+        <!-- Maximum Delay Card -->
+        <div class="stat-card" [class.status-error]="stats()!.overall.maxDelay > 30">
+          <div class="stat-icon">📍</div>
+          <div class="stat-content">
+            <span class="stat-label">Maximum Delay</span>
+            <span class="stat-value">{{ stats()!.overall.maxDelay }}<span class="stat-unit">min</span></span>
+          </div>
+        </div>
+
+        <!-- Trend Card -->
+        <div class="stat-card stat-card-trend" [class.trend-improving]="stats()!.recentTrend.improving" [class.trend-declining]="!stats()!.recentTrend.improving">
+          <div class="stat-icon trend-icon">
+            @if (stats()!.recentTrend.improving) {
+              📈
+            } @else {
+              📉
+            }
+          </div>
+          <div class="stat-content">
+            <span class="stat-label">Recent Trend</span>
+            <span class="stat-value trend-text">
+              @if (stats()!.recentTrend.improving) {
+                Improving!
+              } @else {
+                Declining
+              }
+            </span>
+          </div>
+          <div class="trend-details">
+            <span class="trend-comparison">
+              <span class="trend-current">Last 10: {{ stats()!.recentTrend.last10Average }}m</span>
+              <span class="trend-arrow">
+                @if (stats()!.recentTrend.improving) {
+                  ↓
+                } @else {
+                  ↑
+                }
+              </span>
+              <span class="trend-previous">Prev 10: {{ stats()!.recentTrend.previous10Average }}m</span>
+            </span>
+          </div>
         </div>
       </div>
+    </section>
+
+    <!-- Day of Week Statistics -->
+    @if (stats()!.byDay.length > 0) {
+      <section class="day-stats-section">
+        <h2 class="section-title">Performance by Day of Week</h2>
+        <div class="day-stats-card">
+          <div class="day-stats-grid">
+            @for (day of stats()!.byDay; track day.dayOfWeek) {
+              <div class="day-item">
+                <div class="day-header">
+                  <span class="day-name">{{ day.dayName }}</span>
+                  <span class="day-count">{{ day.count }} entries</span>
+                </div>
+                <div class="day-bar-wrapper">
+                  <div class="day-bar" 
+                       [style.width.%]="getBarWidth(day.averageDelay)"
+                       [class.bar-good]="day.averageDelay <= 5"
+                       [class.bar-warning]="day.averageDelay > 5 && day.averageDelay <= 10"
+                       [class.bar-bad]="day.averageDelay > 10">
+                  </div>
+                </div>
+                <div class="day-value">
+                  <span class="delay-value">{{ day.averageDelay }}</span>
+                  <span class="delay-unit">min avg</span>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </section>
     }
+
+    <!-- Additional Stats Card -->
+    <section class="additional-stats-section">
+      <h2 class="section-title">Additional Insights</h2>
+      <div class="insights-grid">
+        <div class="insight-card">
+          <div class="insight-icon">📉</div>
+          <div class="insight-content">
+            <span class="insight-label">Minimum Delay</span>
+            <span class="insight-value">{{ stats()!.overall.minDelay }} min</span>
+          </div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-icon">📊</div>
+          <div class="insight-content">
+            <span class="insight-label">Std. Deviation</span>
+            <span class="insight-value">{{ stats()!.overall.standardDeviation | number:'1.0-1' }} min</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  }
+
+  <!-- Empty State -->
+  @if (!loading() && !error() && !stats()) {
+    <div class="empty-state">
+      <div class="empty-icon">📭</div>
+      <h3 class="empty-title">No Statistics Available</h3>
+      <p class="empty-message">Start recording time entries to see your statistics here.</p>
+      <a routerLink="/record" class="btn-primary">Record First Entry</a>
+    </div>
   }
 </div>

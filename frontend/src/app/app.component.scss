@@ -1,0 +1,51 @@
+/**
+ * App Component Layout Styles
+ * 
+ * Layout structure:
+ * - Fixed header at top (64px height)
+ * - Scrollable main content area
+ * - Fixed footer at bottom (56px height)
+ */
+
+// Enable smooth scrolling for the entire app
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  scroll-behavior: smooth;
+}
+
+// Main content area
+.main-content {
+  flex: 1;
+  min-height: 100vh;
+  padding-top: 64px; // Header height
+  padding-bottom: 56px; // Footer height
+  padding-left: var(--spacing-4);
+  padding-right: var(--spacing-4);
+  background-color: var(--bg-dark);
+  
+  // Container effect with max-width
+  max-width: var(--container-max-width);
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+  
+  // Responsive adjustments for tablet
+  @media (min-width: 768px) {
+    padding-left: var(--spacing-6);
+    padding-right: var(--spacing-6);
+  }
+  
+  // Responsive adjustments for desktop
+  @media (min-width: 1024px) {
+    padding-left: var(--spacing-8);
+    padding-right: var(--spacing-8);
+  }
+  
+  // Mobile adjustments
+  @media (max-width: 480px) {
+    padding-top: 56px; // Slightly smaller header on mobile if needed
+    padding-bottom: 48px; // Slightly smaller footer on mobile if needed
+  }
+}

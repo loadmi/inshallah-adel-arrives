@@ -1,0 +1,119 @@
+/* ==========================================================================
+   Footer Component Styles
+   Fixed footer bar at bottom of viewport with dark theme styling
+   ========================================================================== */
+
+/* --- Footer Container --- */
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 56px;
+  background-color: var(--bg-elevated);
+  border-top: 1px solid var(--border-color);
+  z-index: calc(var(--z-fixed) - 10);
+}
+
+.footer-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: var(--container-xl);
+  height: 100%;
+  margin: 0 auto;
+  padding: 0 var(--spacing-4);
+
+  @media (min-width: 768px) {
+    padding: 0 var(--spacing-6);
+  }
+
+  /* Mobile: Stack vertically centered */
+  @media (max-width: 767px) {
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--spacing-1);
+  }
+}
+
+/* --- Footer Sections --- */
+.footer-section {
+  display: flex;
+  align-items: center;
+}
+
+/* --- Copyright Section (Left) --- */
+.footer-copyright {
+  flex: 1;
+
+  @media (max-width: 767px) {
+    flex: 0;
+    order: 1;
+  }
+}
+
+.copyright-text {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+/* --- Tagline Section (Center) --- */
+.footer-tagline {
+  flex: 1;
+  justify-content: center;
+
+  @media (max-width: 767px) {
+    display: none;
+  }
+}
+
+.tagline-text {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  font-style: italic;
+  opacity: 0.8;
+}
+
+/* --- Quick Links Section (Right) --- */
+.footer-links {
+  flex: 1;
+  justify-content: flex-end;
+  gap: var(--spacing-4);
+
+  @media (max-width: 767px) {
+    flex: 0;
+    order: 2;
+    gap: var(--spacing-3);
+  }
+}
+
+.footer-link {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: var(--transition-fast);
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-sm);
+
+  &:hover {
+    color: var(--color-accent);
+    background-color: rgba(187, 134, 252, 0.1);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  &:active {
+    color: var(--color-secondary);
+  }
+}
+
+/* --- Host Element --- */
+:host {
+  display: block;
+}

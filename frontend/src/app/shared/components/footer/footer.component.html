@@ -1,0 +1,29 @@
+<footer class="footer" role="contentinfo">
+  <div class="footer-container">
+    <!-- Left Side: Copyright -->
+    <div class="footer-section footer-copyright">
+      <span class="copyright-text">
+        © {{ currentYear }} Adel Standard Time
+      </span>
+    </div>
+
+    <!-- Center: Tagline -->
+    <div class="footer-section footer-tagline">
+      <span class="tagline-text">{{ tagline }}</span>
+    </div>
+
+    <!-- Right Side: Quick Links -->
+    <nav class="footer-section footer-links" aria-label="Footer navigation">
+      <a
+        *ngFor="let link of quickLinks"
+        [href]="link.url"
+        class="footer-link"
+        [attr.aria-label]="link.ariaLabel"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {{ link.label }}
+      </a>
+    </nav>
+  </div>
+</footer>

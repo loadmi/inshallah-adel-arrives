@@ -1,68 +1,108 @@
-<div class="container">
-  <h1>Record Actual Arrival</h1>
-  <p class="subtitle">Log when Adel said he'd arrive vs when he actually arrived</p>
+<div class="record-entry-page">
+  <!-- Page Header -->
+  <header class="page-header">
+    <h1 class="page-title">Record Actual Arrival</h1>
+    <p class="page-subtitle">Log when Adel said he'd arrive vs when he actually arrived</p>
+  </header>
 
-  <form (ngSubmit)="submit()" class="entry-form">
-    <div class="form-group">
-      <label for="worldTime">World Time (When he said he'd arrive)</label>
-      <input
-        type="datetime-local"
-        id="worldTime"
-        [(ngModel)]="worldTime"
-        name="worldTime"
-        required
-      />
-    </div>
+  <!-- Form Card -->
+  <div class="form-card">
+    <form (ngSubmit)="submit()" class="entry-form">
+      <!-- Time Fields Section -->
+      <div class="form-section">
+        <h3 class="section-title">Time Details</h3>
+        
+        <div class="form-group">
+          <label for="worldTime">
+            <span class="label-text">World Time</span>
+            <span class="label-hint">When he said he'd arrive</span>
+          </label>
+          <input
+            type="datetime-local"
+            id="worldTime"
+            [(ngModel)]="worldTime"
+            name="worldTime"
+            required
+            class="form-input"
+          />
+        </div>
 
-    <div class="form-group">
-      <label for="adelTime">Adel Standard Time (When he actually arrived)</label>
-      <input
-        type="datetime-local"
-        id="adelTime"
-        [(ngModel)]="adelTime"
-        name="adelTime"
-        required
-      />
-    </div>
-
-    <div class="form-group">
-      <label for="eventType">Event Type (optional)</label>
-      <select id="eventType" [(ngModel)]="eventType" name="eventType">
-        <option value="">Select type...</option>
-        <option value="meeting">Meeting</option>
-        <option value="party">Party</option>
-        <option value="coffee">Coffee</option>
-        <option value="other">Other</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label for="notes">Notes (optional)</label>
-      <textarea
-        id="notes"
-        [(ngModel)]="notes"
-        name="notes"
-        rows="3"
-        placeholder="Any additional context..."
-      ></textarea>
-    </div>
-
-    @if (error()) {
-      <div class="alert alert-error">{{ error() }}</div>
-    }
-
-    @if (success()) {
-      <div class="alert alert-success">
-        Entry recorded! Model is retraining... Inshallah 🤲
+        <div class="form-group">
+          <label for="adelTime">
+            <span class="label-text">Adel Standard Time</span>
+            <span class="label-hint">When he actually arrived</span>
+          </label>
+          <input
+            type="datetime-local"
+            id="adelTime"
+            [(ngModel)]="adelTime"
+            name="adelTime"
+            required
+            class="form-input"
+          />
+        </div>
       </div>
-    }
 
-    <button type="submit" [disabled]="loading()">
-      @if (loading()) {
-        Training Model...
-      } @else {
-        Record & Train Model
+      <!-- Additional Info Section -->
+      <div class="form-section">
+        <h3 class="section-title">Additional Information</h3>
+        
+        <div class="form-group">
+          <label for="eventType">
+            <span class="label-text">Event Type</span>
+            <span class="label-hint">Optional</span>
+          </label>
+          <select id="eventType" [(ngModel)]="eventType" name="eventType" class="form-select">
+            <option value="">Select type...</option>
+            <option value="meeting">Meeting</option>
+            <option value="party">Party</option>
+            <option value="coffee">Coffee</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="notes">
+            <span class="label-text">Notes</span>
+            <span class="label-hint">Optional</span>
+          </label>
+          <textarea
+            id="notes"
+            [(ngModel)]="notes"
+            name="notes"
+            rows="3"
+            placeholder="Any additional context..."
+            class="form-textarea"
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Status Messages -->
+      @if (error()) {
+        <div class="alert alert-error">
+          <span class="alert-icon">⚠️</span>
+          <span class="alert-message">{{ error() }}</span>
+        </div>
       }
-    </button>
-  </form>
+
+      @if (success()) {
+        <div class="alert alert-success">
+          <span class="alert-icon">✅</span>
+          <span class="alert-message">Entry recorded! Model is retraining... Inshallah 🤲</span>
+        </div>
+      }
+
+      <!-- Submit Button -->
+      <div class="form-actions">
+        <button type="submit" class="btn-submit" [disabled]="loading()">
+          @if (loading()) {
+            <span class="btn-spinner"></span>
+            <span>Training Model...</span>
+          } @else {
+            <span>Record & Train Model</span>
+          }
+        </button>
+      </div>
+    </form>
+  </div>
 </div>

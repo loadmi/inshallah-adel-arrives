@@ -1,3 +1,451 @@
-.prediction-form {
-  max-width: 600px;
+/* ==========================================================================
+   Predict Arrival Component - Card-Based Grid Layout
+   ========================================================================== */
+
+.predict-arrival-page {
+  padding: var(--spacing-6);
+  max-width: var(--container-xl);
+  margin: 0 auto;
+}
+
+/* ==========================================================================
+   Page Header
+   ========================================================================== */
+
+.page-header {
+  text-align: center;
+  margin-bottom: var(--spacing-8);
+}
+
+.page-title {
+  font-family: var(--font-family-serif);
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-2);
+  
+  @media (min-width: 768px) {
+    font-size: var(--font-size-5xl);
+  }
+}
+
+.page-subtitle {
+  font-size: var(--font-size-lg);
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* ==========================================================================
+   Dashboard Grid Layout
+   ========================================================================== */
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-6);
+  
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ==========================================================================
+   Card Styles
+   ========================================================================== */
+
+.card {
+  background-color: var(--bg-light);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-6);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-color);
+  transition: var(--transition-all);
+  
+  &:hover {
+    box-shadow: var(--shadow-lg);
+  }
+}
+
+.card-header {
+  margin-bottom: var(--spacing-4);
+  padding-bottom: var(--spacing-3);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.card-title {
+  font-family: var(--font-family-serif);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.card-content {
+  color: var(--text-secondary);
+}
+
+/* ==========================================================================
+   Input Card
+   ========================================================================== */
+
+.input-card {
+  @media (min-width: 768px) {
+    grid-column: span 2;
+  }
+  
+  @media (min-width: 1024px) {
+    grid-column: span 1;
+  }
+}
+
+.time-input {
+  width: 100%;
+  padding: var(--spacing-4);
+  background-color: var(--bg-elevated);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: var(--font-size-lg);
+  transition: var(--transition-all);
+  
+  &:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(98, 0, 238, 0.25);
+  }
+  
+  &:hover {
+    border-color: var(--color-primary-light);
+  }
+}
+
+.input-hint {
+  font-size: var(--font-size-sm);
+  color: var(--text-tertiary);
+  margin-top: var(--spacing-2);
+  margin-bottom: 0;
+}
+
+/* ==========================================================================
+   Loading Card
+   ========================================================================== */
+
+.loading-card {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: var(--spacing-8);
+}
+
+.loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-4);
+}
+
+.loading-spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid var(--bg-elevated);
+  border-top-color: var(--color-accent);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-text {
+  font-size: var(--font-size-lg);
+  color: var(--text-secondary);
+}
+
+/* ==========================================================================
+   Time Comparison Card
+   ========================================================================== */
+
+.time-comparison-card {
+  grid-column: 1 / -1;
+}
+
+.time-comparison {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-4);
+  
+  @media (min-width: 640px) {
+    flex-direction: row;
+    justify-content: center;
+    gap: var(--spacing-6);
+  }
+}
+
+.time-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-5);
+  background-color: var(--bg-elevated);
+  border-radius: var(--radius-lg);
+  min-width: 200px;
+  flex: 1;
+  max-width: 280px;
+  text-align: center;
+}
+
+.time-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+  margin-bottom: var(--spacing-2);
+}
+
+.time-value {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-1);
+  
+  @media (min-width: 768px) {
+    font-size: var(--font-size-3xl);
+  }
+  
+  &.highlighted {
+    color: var(--color-secondary);
+    font-size: var(--font-size-3xl);
+    
+    @media (min-width: 768px) {
+      font-size: var(--font-size-4xl);
+    }
+  }
+}
+
+.time-sublabel {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+}
+
+.world-time {
+  border: 2px solid var(--border-color);
+}
+
+.ast-time {
+  border: 2px solid var(--color-secondary);
+  background: linear-gradient(
+    135deg,
+    var(--bg-elevated) 0%,
+    rgba(3, 218, 198, 0.1) 100%
+  );
+}
+
+.arrow-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  @media (min-width: 640px) {
+    flex-shrink: 0;
+  }
+}
+
+.arrow {
+  font-size: var(--font-size-3xl);
+  color: var(--color-accent);
+  transform: rotate(90deg);
+  
+  @media (min-width: 640px) {
+    transform: rotate(0deg);
+  }
+}
+
+/* ==========================================================================
+   Stats Grid
+   ========================================================================== */
+
+.stats-grid {
+  display: contents;
+}
+
+.stat-card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-4);
+}
+
+.stat-icon {
+  font-size: var(--font-size-3xl);
+  line-height: 1;
+}
+
+.stat-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.stat-value {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+}
+
+.stat-label {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.stat-meta {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+}
+
+/* Delay Card */
+.delay-card {
+  .stat-value {
+    color: var(--color-warning);
+  }
+}
+
+/* Confidence Card Variations */
+.confidence-card {
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+  }
+  
+  &.confidence-high {
+    &::before {
+      background-color: var(--color-success);
+    }
+    
+    .stat-value {
+      color: var(--color-success);
+    }
+  }
+  
+  &.confidence-medium {
+    &::before {
+      background-color: var(--color-warning);
+    }
+    
+    .stat-value {
+      color: var(--color-warning);
+    }
+  }
+  
+  &.confidence-low {
+    &::before {
+      background-color: var(--color-error);
+    }
+    
+    .stat-value {
+      color: var(--color-error);
+    }
+  }
+}
+
+/* ==========================================================================
+   Similar Events Card
+   ========================================================================== */
+
+.similar-events-card {
+  @media (min-width: 1024px) {
+    grid-column: span 1;
+  }
+}
+
+.insights-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-4);
+}
+
+.insight-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-4);
+  background-color: var(--bg-elevated);
+  border-radius: var(--radius-md);
+  text-align: center;
+}
+
+.insight-value {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-accent);
+  margin-bottom: var(--spacing-1);
+}
+
+.insight-label {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.insight-note {
+  font-size: var(--font-size-sm);
+  color: var(--text-tertiary);
+  text-align: center;
+  margin: 0;
+  font-style: italic;
+}
+
+/* ==========================================================================
+   Alert Overrides
+   ========================================================================== */
+
+.alert {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  
+  .alert-icon {
+    font-size: var(--font-size-xl);
+  }
+}
+
+/* ==========================================================================
+   Responsive Adjustments
+   ========================================================================== */
+
+@media (max-width: 639px) {
+  .predict-arrival-page {
+    padding: var(--spacing-4);
+  }
+  
+  .page-title {
+    font-size: var(--font-size-3xl);
+  }
+  
+  .page-subtitle {
+    font-size: var(--font-size-base);
+  }
+  
+  .card {
+    padding: var(--spacing-4);
+  }
+  
+  .time-box {
+    width: 100%;
+    max-width: none;
+  }
 }

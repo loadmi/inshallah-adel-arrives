@@ -1,60 +1,202 @@
-<div class="container">
-  <h1>Entry History</h1>
-  <p class="subtitle">All recorded arrivals</p>
+<div class="history-page">
+  <!-- Page Header -->
+  <header class="page-header">
+    <h1 class="page-title">Entry History</h1>
+    <p class="page-subtitle">All recorded arrivals and time comparisons</p>
+  </header>
 
+  <!-- Filter Section -->
+  <section class="filters-section">
+    <div class="filter-controls">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input 
+          type="text" 
+          placeholder="Search entries..." 
+          class="search-input"
+          [(ngModel)]="searchQuery"
+          (input)="filterEntries()"
+        />
+        @if (searchQuery()) {
+          <button class="clear-search" (click)="clearSearch()">✕</button>
+        }
+      </div>
+      
+      <div class="filter-buttons">
+        <button 
+          class="filter-btn" 
+          [class.active]="activeFilter() === 'all'"
+          (click)="setFilter('all')"
+        >
+          All
+        </button>
+        <button 
+          class="filter-btn" 
+          [class.active]="activeFilter() === 'on-time'"
+          (click)="setFilter('on-time')"
+        >
+          On Time
+        </button>
+        <button 
+          class="filter-btn" 
+          [class.active]="activeFilter() === 'late'"
+          (click)="setFilter('late')"
+        >
+          Late
+        </button>
+        <button 
+          class="filter-btn" 
+          [class.active]="activeFilter() === 'very-late'"
+          (click)="setFilter('very-late')"
+        >
+          Very Late
+        </button>
+      </div>
+    </div>
+    
+    @if (searchQuery() || activeFilter() !== 'all') {
+      <div class="active-filters">
+        <span class="filter-label">Showing {{ filteredEntries().length }} of {{ entries().length }} entries</span>
+        <button class="clear-all-btn" (click)="clearAllFilters()">Clear Filters</button>
+      </div>
+    }
+  </section>
+
+  <!-- Loading State -->
   @if (loading()) {
-    <div class="loading">Loading entries...</div>
-  }
-
-  @if (error()) {
-    <div class="alert alert-error">{{ error() }}</div>
-  }
-
-  @if (!loading() && entries().length === 0) {
-    <div class="empty-state">
-      <p>No entries yet. Start recording Adel's arrivals!</p>
-      <a routerLink="/record" class="btn">Record First Entry</a>
+    <div class="loading-container">
+      <div class="skeleton-grid">
+        @for (i of [1, 2, 3, 4, 5, 6]; track i) {
+          <div class="skeleton-card">
+            <div class="skeleton-header">
+              <div class="skeleton-line skeleton-date"></div>
+              <div class="skeleton-badge"></div>
+            </div>
+            <div class="skeleton-body">
+              <div class="skeleton-line skeleton-time"></div>
+              <div class="skeleton-line skeleton-time"></div>
+            </div>
+            <div class="skeleton-footer">
+              <div class="skeleton-line skeleton-tag"></div>
+            </div>
+          </div>
+        }
+      </div>
     </div>
   }
 
-  @if (entries().length > 0) {
-    <div class="entries-list">
-      @for (entry of entries(); track entry.id) {
-        <div class="entry-card">
-          <div class="entry-header">
-            <span class="date">{{ entry.createdAt | date:'medium' }}</span>
-            <span class="delay-badge" [class]="getDelayClass(entry.delayMinutes)">
-              {{ entry.delayMinutes }} min late
+  <!-- Error State -->
+  @if (error()) {
+    <div class="alert alert-error">
+      <span class="alert-icon">⚠️</span>
+      <span class="alert-message">{{ error() }}</span>
+      <button class="retry-btn" (click)="loadEntries()">Retry</button>
+    </div>
+  }
+
+  <!-- Empty State -->
+  @if (!loading() && entries().length === 0) {
+    <div class="empty-state">
+      <div class="empty-icon">📊</div>
+      <h3 class="empty-title">No entries yet</h3>
+      <p class="empty-message">Start recording Adel's arrivals to see them here!</p>
+      <a routerLink="/record" class="btn-primary">
+        <span class="btn-icon">➕</span>
+        Record First Entry
+      </a>
+    </div>
+  }
+
+  <!-- No Results State (when filtering) -->
+  @if (!loading() && entries().length > 0 && filteredEntries().length === 0) {
+    <div class="empty-state">
+      <div class="empty-icon">🔍</div>
+      <h3 class="empty-title">No matching entries</h3>
+      <p class="empty-message">Try adjusting your search or filter criteria</p>
+      <button class="btn-secondary" (click)="clearAllFilters()">
+        Clear Filters
+      </button>
+    </div>
+  }
+
+  <!-- Entries Grid -->
+  @if (filteredEntries().length > 0) {
+    <div class="entries-grid">
+      @for (entry of filteredEntries(); track entry.id) {
+        <article class="entry-card" [class]="'entry-card--' + getDelayClass(entry.delayMinutes)">
+          <!-- Card Header -->
+          <header class="card-header">
+            <time class="entry-date" [attr.datetime]="entry.createdAt">
+              {{ entry.createdAt | date:'mediumDate' }}
+            </time>
+            <span class="delay-badge" [class]="'delay-badge--' + getDelayClass(entry.delayMinutes)">
+              @if (entry.delayMinutes <= 5) {
+                ✓ On Time
+              } @else {
+                {{ entry.delayMinutes }} min late
+              }
             </span>
+          </header>
+
+          <!-- Time Comparison -->
+          <div class="time-comparison">
+            <div class="time-block">
+              <span class="time-label">World Time (Said)</span>
+              <span class="time-value">{{ entry.worldTime | date:'shortTime' }}</span>
+            </div>
+            
+            <div class="time-arrow">
+              <span class="arrow-icon">→</span>
+              <span class="delay-amount">+{{ entry.delayMinutes }}m</span>
+            </div>
+            
+            <div class="time-block time-block--ast">
+              <span class="time-label">AST (Actual)</span>
+              <span class="time-value">{{ entry.adelTime | date:'shortTime' }}</span>
+            </div>
           </div>
 
-          <div class="entry-times">
-            <div class="time-item">
-              <span class="label">Said:</span>
-              <span class="value">{{ entry.worldTime | date:'shortTime' }}</span>
-            </div>
-            <div class="arrow">→</div>
-            <div class="time-item">
-              <span class="label">Arrived:</span>
-              <span class="value">{{ entry.adelTime | date:'shortTime' }}</span>
-            </div>
-          </div>
-
+          <!-- Entry Details -->
           @if (entry.eventType || entry.notes) {
             <div class="entry-details">
               @if (entry.eventType) {
-                <span class="tag">{{ entry.eventType }}</span>
+                <span class="event-tag">{{ entry.eventType }}</span>
               }
               @if (entry.notes) {
-                <p class="notes">{{ entry.notes }}</p>
+                <p class="entry-notes">{{ entry.notes }}</p>
               }
             </div>
           }
 
-          <button class="delete-btn" (click)="deleteEntry(entry.id)">
-            🗑️ Delete
-          </button>
-        </div>
+          <!-- Card Actions -->
+          <footer class="card-actions">
+            <button 
+              class="action-btn action-btn--delete" 
+              (click)="confirmDelete(entry)"
+              title="Delete entry"
+            >
+              <span class="action-icon">🗑️</span>
+              <span class="action-label">Delete</span>
+            </button>
+          </footer>
+
+          <!-- Delete Confirmation -->
+          @if (entryToDelete()?.id === entry.id) {
+            <div class="delete-confirm-overlay">
+              <div class="delete-confirm-dialog">
+                <p class="confirm-message">Delete this entry?</p>
+                <div class="confirm-actions">
+                  <button class="confirm-btn confirm-btn--cancel" (click)="cancelDelete()">
+                    Cancel
+                  </button>
+                  <button class="confirm-btn confirm-btn--delete" (click)="deleteEntry(entry.id)">
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          }
+        </article>
       }
     </div>
   }

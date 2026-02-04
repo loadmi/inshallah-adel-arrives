@@ -1,63 +1,126 @@
-<div class="container">
-  <h1>Adel Time Converter</h1>
-  <p class="subtitle">Convert World Time to Adel Standard Time (AST)</p>
+<div class="predict-arrival-page">
+  <!-- Page Header -->
+  <header class="page-header">
+    <h1 class="page-title">Adel Time Converter</h1>
+    <p class="page-subtitle">Convert World Time to Adel Standard Time (AST)</p>
+  </header>
 
-  <div class="prediction-form">
-    <div class="form-group">
-      <label for="worldTime">Adel says he'll be there at:</label>
-      <input
-        type="datetime-local"
-        id="worldTime"
-        [(ngModel)]="worldTime"
-        (change)="predict()"
-      />
+  <!-- Main Grid Layout -->
+  <div class="dashboard-grid">
+    <!-- Input Card -->
+    <div class="card input-card">
+      <div class="card-header">
+        <h3 class="card-title">Select Time</h3>
+      </div>
+      <div class="card-content">
+        <div class="form-group">
+          <label for="worldTime">Adel says he'll be there at:</label>
+          <input
+            type="datetime-local"
+            id="worldTime"
+            class="time-input"
+            [(ngModel)]="worldTime"
+            (change)="predict()"
+          />
+        </div>
+        <p class="input-hint">Select when Adel claims he will arrive</p>
+      </div>
     </div>
 
+    <!-- Loading State -->
     @if (loading()) {
-      <div class="loading">Consulting the universe... Inshallah 🤲</div>
+      <div class="card loading-card">
+        <div class="loading-content">
+          <div class="loading-spinner"></div>
+          <span class="loading-text">Consulting the universe... Inshallah 🤲</span>
+        </div>
+      </div>
     }
 
+    <!-- Error Alert -->
     @if (error()) {
-      <div class="alert alert-error">{{ error() }}</div>
+      <div class="alert alert-error">
+        <span class="alert-icon">⚠️</span>
+        <span>{{ error() }}</span>
+      </div>
     }
 
+    <!-- Prediction Results -->
     @if (prediction()) {
-      <div class="prediction-result">
-        <div class="time-comparison">
-          <div class="time-box world-time">
-            <div class="label">World Time</div>
-            <div class="time">{{ prediction()!.worldTime | date:'short' }}</div>
-          </div>
+      <!-- Time Comparison Card - Full Width -->
+      <div class="card time-comparison-card">
+        <div class="card-header">
+          <h3 class="card-title">Time Conversion Result</h3>
+        </div>
+        <div class="card-content">
+          <div class="time-comparison">
+            <div class="time-box world-time">
+              <span class="time-label">World Time</span>
+              <span class="time-value">{{ prediction()!.worldTime | date:'short' }}</span>
+              <span class="time-sublabel">What Adel said</span>
+            </div>
 
-          <div class="arrow">→</div>
+            <div class="arrow-indicator">
+              <span class="arrow">→</span>
+            </div>
 
-          <div class="time-box ast-time">
-            <div class="label">Adel Standard Time (AST)</div>
-            <div class="time highlighted">
-              {{ prediction()!.predictedAdelTime | date:'short' }}
+            <div class="time-box ast-time">
+              <span class="time-label">Adel Standard Time</span>
+              <span class="time-value highlighted">
+                {{ prediction()!.predictedAdelTime | date:'short' }}
+              </span>
+              <span class="time-sublabel">When he'll actually arrive</span>
             </div>
           </div>
         </div>
-
-        <div class="delay-info">
-          <strong>Expected Delay:</strong> {{ prediction()!.delayMinutes }} minutes
-        </div>
-
-        <div class="confidence-badge" 
-             [style.background]="getConfidenceColor(prediction()!.confidence.level)">
-          Confidence: {{ prediction()!.confidence.level | titlecase }}
-          ({{ prediction()!.confidence.dataPointsUsed }} data points)
-        </div>
-
-        @if (prediction()!.similarEvents) {
-          <div class="similar-events">
-            <small>
-              Similar events: {{ prediction()!.similarEvents!.count }} entries, 
-              avg {{ prediction()!.similarEvents!.averageDelay }} min late
-            </small>
-          </div>
-        }
       </div>
+
+      <!-- Stats Grid -->
+      <div class="stats-grid">
+        <!-- Delay Card -->
+        <div class="card stat-card delay-card">
+          <div class="stat-icon">⏱️</div>
+          <div class="stat-content">
+            <span class="stat-value">{{ prediction()!.delayMinutes }}</span>
+            <span class="stat-label">Minutes Expected Delay</span>
+          </div>
+        </div>
+
+        <!-- Confidence Card -->
+        <div class="card stat-card confidence-card" 
+             [class]="'confidence-' + prediction()!.confidence.level">
+          <div class="stat-icon">📊</div>
+          <div class="stat-content">
+            <span class="stat-value">{{ prediction()!.confidence.level | titlecase }}</span>
+            <span class="stat-label">Confidence Level</span>
+            <span class="stat-meta">{{ prediction()!.confidence.dataPointsUsed }} data points used</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Similar Events Card (if available) -->
+      @if (prediction()!.similarEvents) {
+        <div class="card similar-events-card">
+          <div class="card-header">
+            <h3 class="card-title">Historical Insights</h3>
+          </div>
+          <div class="card-content">
+            <div class="insights-grid">
+              <div class="insight-item">
+                <span class="insight-value">{{ prediction()!.similarEvents!.count }}</span>
+                <span class="insight-label">Similar Events</span>
+              </div>
+              <div class="insight-item">
+                <span class="insight-value">{{ prediction()!.similarEvents!.averageDelay }} min</span>
+                <span class="insight-label">Average Delay</span>
+              </div>
+            </div>
+            <p class="insight-note">
+              Based on {{ prediction()!.similarEvents!.count }} previous entries with similar conditions
+            </p>
+          </div>
+        </div>
+      }
     }
   </div>
 </div>

@@ -1,6 +1,6 @@
 /**
  * Predict Arrival Component
- * Main prediction interface
+ * Main prediction interface with card-based grid layout
  */
 
 import { Component, inject, signal } from '@angular/core';
@@ -19,12 +19,22 @@ import { PredictionResponse } from '../../core/models/prediction.model';
 export class PredictArrivalComponent {
   private adelTimeService = inject(AdelTimeService);
 
+  /** User-selected world time input */
   worldTime = signal('');
+  
+  /** Prediction response from the API */
   prediction = signal<PredictionResponse | null>(null);
+  
+  /** Loading state for async operations */
   loading = signal(false);
+  
+  /** Error message to display */
   error = signal('');
 
-  async predict() {
+  /**
+   * Fetches prediction from the API based on the selected world time
+   */
+  async predict(): Promise<void> {
     if (!this.worldTime()) {
       this.error.set('Please enter a time');
       return;
@@ -44,15 +54,6 @@ export class PredictArrivalComponent {
       console.error(err);
     } finally {
       this.loading.set(false);
-    }
-  }
-
-  getConfidenceColor(level: string): string {
-    switch (level) {
-      case 'high': return 'green';
-      case 'medium': return 'orange';
-      case 'low': return 'red';
-      default: return 'gray';
     }
   }
 }

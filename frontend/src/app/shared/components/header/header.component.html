@@ -1,14 +1,68 @@
-<header class="app-header">
-  <div class="container">
-    <h1 class="logo">
-      <span class="icon">⏰</span>
-      Adel Standard Time
-    </h1>
-    <nav>
-      <a routerLink="/predict" routerLinkActive="active">Predict</a>
-      <a routerLink="/record" routerLinkActive="active">Record</a>
-      <a routerLink="/statistics" routerLinkActive="active">Stats</a>
-      <a routerLink="/history" routerLinkActive="active">History</a>
+<header class="navbar" role="banner">
+  <div class="navbar-container">
+    <!-- Logo/Brand Section -->
+    <a routerLink="/predict" class="brand" aria-label="Go to home">
+      <span class="brand-icon">⏰</span>
+      <span class="brand-text">
+        Adel <span class="brand-highlight">Standard Time</span>
+      </span>
+    </a>
+
+    <!-- Desktop Navigation -->
+    <nav class="nav-desktop" aria-label="Main navigation">
+      <a 
+        *ngFor="let item of navItems"
+        [routerLink]="item.path"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: item.path === '/predict' }"
+        class="nav-link"
+      >
+        {{ item.label }}
+      </a>
     </nav>
+
+    <!-- Hamburger Menu Button (Mobile) -->
+    <button
+      class="hamburger"
+      type="button"
+      [class.is-active]="isMenuOpen"
+      (click)="toggleMenu(); $event.stopPropagation()"
+      [attr.aria-expanded]="isMenuOpen"
+      aria-controls="mobile-menu"
+      aria-label="Toggle navigation menu"
+    >
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+    </button>
   </div>
+
+  <!-- Mobile Menu Overlay -->
+  <div 
+    class="mobile-overlay"
+    [class.is-visible]="isMenuOpen"
+    (click)="closeMenu()"
+    aria-hidden="true"
+  ></div>
+
+  <!-- Mobile Navigation Menu -->
+  <nav
+    id="mobile-menu"
+    class="mobile-menu"
+    [class.is-open]="isMenuOpen"
+    aria-label="Mobile navigation"
+    [attr.aria-hidden]="!isMenuOpen"
+  >
+    <a 
+      *ngFor="let item of navItems"
+      [routerLink]="item.path"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: item.path === '/predict' }"
+      class="mobile-nav-link"
+      (click)="closeMenu()"
+    >
+      <span class="nav-icon">{{ item.icon }}</span>
+      <span class="nav-label">{{ item.label }}</span>
+    </a>
+  </nav>
 </header>
