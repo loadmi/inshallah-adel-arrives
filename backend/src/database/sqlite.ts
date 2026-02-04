@@ -47,6 +47,9 @@ export async function initializeDatabase(): Promise<void> {
       db!.run(index);
     });
 
+    // Run migrations for existing databases
+    runMigrations();
+
     // Save to disk
     saveDatabase();
 
@@ -71,5 +74,48 @@ export function closeDatabase(): void {
     db.close();
     db = null;
     logger.info('Database connection closed');
+  }
+}
+
+/**
+ * Run schema migrations for existing databases
+ * Handles transition from old schema (event_type/notes) to new schema (reason)
+ */
+function runMigrations(): void {
+  if (!db) return;
+
+  try {
+    // Get current table schema
+    const tableInfo = db.exec("PRAGMA table_info(entries)");
+    if (tableInfo.length === 0 || !tableInfo[0].values) return;
+
+    const columns = tableInfo[0].values.map((row: any[]) => row[1] as string);
+    
+    // Check if we have the old schema (event_type/notes) but not the new (reason)
+    const hasOldSchema = columns.includes('event_type') || columns.includes('notes');
+    const hasReasonColumn = columns.includes('reason');
+
+    // Migration: Add reason column if it doesn't exist
+    if (!hasReasonColumn) {
+      logger.info('Running migration: Adding reason column to entries table');
+      db.run('ALTER TABLE entries ADD COLUMN reason TEXT');
+      
+      // Optionally migrate notes data to reason (if notes column exists)
+      if (columns.includes('notes')) {
+        logger.info('Migrating notes data to reason column');
+        db.run('UPDATE entries SET reason = notes WHERE notes IS NOT NULL AND notes != ""');
+      }
+      
+      logger.info('Migration completed: reason column added');
+    }
+
+    // Note: SQLite doesn't support DROP COLUMN in older versions,
+    // so we leave event_type/notes columns in place if they exist
+    if (hasOldSchema) {
+      logger.info('Old schema columns (event_type/notes) detected but retained for backward compatibility');
+    }
+  } catch (error) {
+    logger.error('Migration failed:', error);
+    throw error;
   }
 }

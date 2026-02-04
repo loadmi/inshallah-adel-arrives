@@ -48,32 +48,16 @@
         <h3 class="section-title">Additional Information</h3>
         
         <div class="form-group">
-          <label for="eventType">
-            <span class="label-text">Event Type</span>
+          <label for="reason">
+            <span class="label-text">Reason for being late</span>
             <span class="label-hint">Optional</span>
           </label>
-          <select id="eventType" [(ngModel)]="eventType" name="eventType" class="form-select">
-            <option value="">Select type...</option>
-            <option value="meeting">Meeting</option>
-            <option value="party">Party</option>
-            <option value="coffee">Coffee</option>
-            <option value="other">Other</option>
+          <select id="reason" [(ngModel)]="reason" name="reason" class="form-select">
+            <option value="">Select reason (or leave if was on time)</option>
+            @for (reasonValue of validReasons; track reasonValue) {
+              <option [value]="reasonValue">{{ reasonLabels[reasonValue] }}</option>
+            }
           </select>
-        </div>
-
-        <div class="form-group">
-          <label for="notes">
-            <span class="label-text">Notes</span>
-            <span class="label-hint">Optional</span>
-          </label>
-          <textarea
-            id="notes"
-            [(ngModel)]="notes"
-            name="notes"
-            rows="3"
-            placeholder="Any additional context..."
-            class="form-textarea"
-          ></textarea>
         </div>
       </div>
 

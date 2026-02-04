@@ -38,8 +38,7 @@ class EntriesController {
         hourOfDay,
         dayOfWeek,
         minutesSinceMidnight,
-        eventType: input.eventType,
-        notes: input.notes
+        reason: input.reason
       };
 
       // Save entry

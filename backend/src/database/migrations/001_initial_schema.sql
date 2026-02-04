@@ -8,8 +8,7 @@ CREATE TABLE IF NOT EXISTS entries (
     hour_of_day INTEGER NOT NULL,
     day_of_week INTEGER NOT NULL,
     minutes_since_midnight INTEGER NOT NULL,
-    event_type TEXT,
-    notes TEXT,
+    reason TEXT,  -- Valid values: 'traffic', 'family_emergency', 'work_emergency', 'technical_difficulties', 'other'
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 

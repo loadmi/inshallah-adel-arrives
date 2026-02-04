@@ -2,6 +2,18 @@
  * Time Entry model (frontend)
  */
 
+export type LateReason = 'traffic' | 'family_emergency' | 'work_emergency' | 'technical_difficulties' | 'other';
+
+export const VALID_LATE_REASONS: LateReason[] = ['traffic', 'family_emergency', 'work_emergency', 'technical_difficulties', 'other'];
+
+export const LATE_REASON_LABELS: Record<LateReason, string> = {
+  traffic: 'Traffic',
+  family_emergency: 'Family emergency',
+  work_emergency: 'Work emergency',
+  technical_difficulties: 'Technical difficulties',
+  other: 'Other'
+};
+
 export interface TimeEntry {
   id: number;
   worldTime: Date;
@@ -10,14 +22,12 @@ export interface TimeEntry {
   hourOfDay: number;
   dayOfWeek: number;
   minutesSinceMidnight: number;
-  eventType?: string;
-  notes?: string;
+  reason?: LateReason;
   createdAt: Date;
 }
 
 export interface CreateTimeEntryRequest {
   worldTime: string;
   adelTime: string;
-  eventType?: string;
-  notes?: string;
+  reason?: LateReason;
 }

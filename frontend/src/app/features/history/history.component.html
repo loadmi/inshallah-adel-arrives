@@ -157,14 +157,9 @@
           </div>
 
           <!-- Entry Details -->
-          @if (entry.eventType || entry.notes) {
+          @if (entry.reason) {
             <div class="entry-details">
-              @if (entry.eventType) {
-                <span class="event-tag">{{ entry.eventType }}</span>
-              }
-              @if (entry.notes) {
-                <p class="entry-notes">{{ entry.notes }}</p>
-              }
+              <span class="reason-tag">{{ getReasonLabel(entry.reason) }}</span>
             </div>
           }
 

@@ -5,6 +5,17 @@
  * - Validation schemas
  */
 
+// Valid late reason values
+export type LateReason = 'traffic' | 'family_emergency' | 'work_emergency' | 'technical_difficulties' | 'other';
+
+export const VALID_LATE_REASONS: LateReason[] = [
+  'traffic',
+  'family_emergency',
+  'work_emergency',
+  'technical_difficulties',
+  'other'
+];
+
 export interface TimeEntry {
   id: number;
   worldTime: Date;
@@ -13,8 +24,7 @@ export interface TimeEntry {
   hourOfDay: number;
   dayOfWeek: number;
   minutesSinceMidnight: number;
-  eventType?: string;
-  notes?: string;
+  reason?: LateReason;
   createdAt: Date;
 }
 
@@ -25,13 +35,11 @@ export interface CreateTimeEntryDTO {
   hourOfDay: number;
   dayOfWeek: number;
   minutesSinceMidnight: number;
-  eventType?: string;
-  notes?: string;
+  reason?: LateReason;
 }
 
 export interface TimeEntryInput {
   worldTime: string;  // ISO date string
   adelTime: string;   // ISO date string
-  eventType?: string;
-  notes?: string;
+  reason?: LateReason;
 }

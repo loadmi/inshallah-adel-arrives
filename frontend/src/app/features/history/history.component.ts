@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AdelTimeService } from '../../core/services/adel-time.service';
-import { TimeEntry } from '../../core/models/time-entry.model';
+import { TimeEntry, LateReason, LATE_REASON_LABELS } from '../../core/models/time-entry.model';
 
 type FilterType = 'all' | 'on-time' | 'late' | 'very-late';
 
@@ -39,11 +39,11 @@ export class HistoryComponent implements OnInit {
     // Apply search filter
     const query = this.searchQuery().toLowerCase().trim();
     if (query) {
-      result = result.filter(entry => 
-        entry.notes?.toLowerCase().includes(query) ||
-        entry.eventType?.toLowerCase().includes(query) ||
-        new Date(entry.createdAt).toLocaleDateString().includes(query)
-      );
+      result = result.filter(entry => {
+        const reasonLabel = entry.reason ? this.getReasonLabel(entry.reason).toLowerCase() : '';
+        return reasonLabel.includes(query) ||
+          new Date(entry.createdAt).toLocaleDateString().includes(query);
+      });
     }
     
     // Apply delay filter
@@ -60,6 +60,13 @@ export class HistoryComponent implements OnInit {
     
     return result;
   });
+
+  /**
+   * Get human-readable label for a late reason
+   */
+  getReasonLabel(reason: LateReason): string {
+    return LATE_REASON_LABELS[reason] || reason;
+  }
 
   ngOnInit() {
     this.loadEntries();

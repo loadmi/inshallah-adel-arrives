@@ -4,7 +4,7 @@
  * - Sanitize strings
  */
 
-import { TimeEntryInput } from '../models/time-entry.model';
+import { TimeEntryInput, LateReason, VALID_LATE_REASONS } from '../models/time-entry.model';
 import { PredictionRequest } from '../models/prediction.model';
 
 export class ValidationService {
@@ -25,13 +25,20 @@ export class ValidationService {
       return { valid: false, error: 'Invalid adelTime format' };
     }
 
+    // Validate reason if provided
+    if (input.reason && !VALID_LATE_REASONS.includes(input.reason as LateReason)) {
+      return { 
+        valid: false, 
+        error: `Invalid reason. Must be one of: ${VALID_LATE_REASONS.join(', ')}` 
+      };
+    }
+
     return {
       valid: true,
       data: {
         worldTime: input.worldTime,
         adelTime: input.adelTime,
-        eventType: input.eventType,
-        notes: input.notes
+        reason: input.reason
       }
     };
   }

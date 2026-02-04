@@ -8,6 +8,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AdelTimeService } from '../../core/services/adel-time.service';
+import { LateReason, VALID_LATE_REASONS, LATE_REASON_LABELS } from '../../core/models/time-entry.model';
 
 @Component({
   selector: 'app-record-entry',
@@ -22,11 +23,14 @@ export class RecordEntryComponent {
 
   worldTime = signal('');
   adelTime = signal('');
-  eventType = signal('');
-  notes = signal('');
+  reason = signal<LateReason | ''>('');
   loading = signal(false);
   success = signal(false);
   error = signal('');
+
+  // Expose constants to template
+  readonly validReasons = VALID_LATE_REASONS;
+  readonly reasonLabels = LATE_REASON_LABELS;
 
   async submit() {
     if (!this.worldTime() || !this.adelTime()) {
@@ -41,8 +45,7 @@ export class RecordEntryComponent {
       await this.adelTimeService.createEntry({
         worldTime: new Date(this.worldTime()).toISOString(),
         adelTime: new Date(this.adelTime()).toISOString(),
-        eventType: this.eventType() || undefined,
-        notes: this.notes() || undefined
+        reason: this.reason() || undefined
       }).toPromise();
 
       this.success.set(true);
@@ -51,8 +54,7 @@ export class RecordEntryComponent {
       setTimeout(() => {
         this.worldTime.set('');
         this.adelTime.set('');
-        this.eventType.set('');
-        this.notes.set('');
+        this.reason.set('');
         this.success.set(false);
       }, 2000);
 

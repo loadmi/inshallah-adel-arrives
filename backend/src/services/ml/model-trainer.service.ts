@@ -14,8 +14,14 @@ export class ModelTrainerService {
   async trainModel(
     features: number[][],
     labels: number[]
-  ): Promise<{ model: tf.LayersModel; metrics: TrainingMetrics }> {
+  ): Promise<{ model: tf.LayersModel; metrics: TrainingMetrics } | null> {
     
+    // Check minimum sample requirement
+    if (features.length < 2) {
+      logger.warn('Not enough data to train model (need at least 2 entries)');
+      return null;
+    }
+
     logger.info(`Training model on ${features.length} samples`);
 
     // Convert to tensors
@@ -41,7 +47,11 @@ export class ModelTrainerService {
       callbacks: {
         onEpochEnd: (epoch, logs) => {
           if (epoch % 20 === 0) {
-            logger.info(`Epoch ${epoch}: loss=${logs?.loss.toFixed(4)}, mae=${logs?.mae.toFixed(2)}`);
+            if (logs?.loss !== undefined && logs?.mae !== undefined) {
+              logger.info(`Epoch ${epoch}: loss=${logs.loss.toFixed(4)}, mae=${logs.mae.toFixed(2)}`);
+            } else {
+              logger.info(`Epoch ${epoch}: training in progress...`);
+            }
           }
         }
       }
@@ -61,7 +71,7 @@ export class ModelTrainerService {
     xs.dispose();
     ys.dispose();
 
-    logger.info(`Training complete. MAE: ${finalMetrics.mae.toFixed(2)} minutes`);
+    logger.info(`Training complete. MAE: ${finalMetrics.mae?.toFixed(2) ?? 'N/A'} minutes`);
 
     return { model, metrics: finalMetrics };
   }

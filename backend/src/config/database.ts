@@ -18,8 +18,7 @@ export const DATABASE_CONFIG = {
         hour_of_day INTEGER NOT NULL,
         day_of_week INTEGER NOT NULL,
         minutes_since_midnight INTEGER NOT NULL,
-        event_type TEXT,
-        notes TEXT,
+        reason TEXT,
         created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
       )
     `,
