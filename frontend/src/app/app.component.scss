@@ -19,7 +19,7 @@
 .main-content {
   flex: 1;
   min-height: 100vh;
-  padding-top: 64px; // Header height
+  padding-top: 72px; // Header height (mobile)
   padding-bottom: 56px; // Footer height
   padding-left: var(--spacing-4);
   padding-right: var(--spacing-4);
@@ -33,6 +33,7 @@
   
   // Responsive adjustments for tablet
   @media (min-width: 768px) {
+    padding-top: 80px; // Header height (desktop)
     padding-left: var(--spacing-6);
     padding-right: var(--spacing-6);
   }
@@ -45,7 +46,6 @@
   
   // Mobile adjustments
   @media (max-width: 480px) {
-    padding-top: 56px; // Slightly smaller header on mobile if needed
     padding-bottom: 48px; // Slightly smaller footer on mobile if needed
   }
 }

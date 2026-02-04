@@ -3,7 +3,7 @@
     <!-- Left Side: Copyright -->
     <div class="footer-section footer-copyright">
       <span class="copyright-text">
-        © {{ currentYear }} Adel Standard Time
+        Made with ❤️ by <a href="https://github.com/loadmi" target="_blank" rel="noopener noreferrer">loadmi</a>
       </span>
     </div>
 
@@ -14,16 +14,29 @@
 
     <!-- Right Side: Quick Links -->
     <nav class="footer-section footer-links" aria-label="Footer navigation">
-      <a
-        *ngFor="let link of quickLinks"
-        [href]="link.url"
-        class="footer-link"
-        [attr.aria-label]="link.ariaLabel"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        {{ link.label }}
-      </a>
+      <ng-container *ngFor="let link of quickLinks">
+        <a
+          *ngIf="link.label !== 'About'"
+          [href]="link.url"
+          class="footer-link"
+          [attr.aria-label]="link.ariaLabel"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {{ link.label }}
+        </a>
+        <button
+          *ngIf="link.label === 'About'"
+          type="button"
+          class="footer-link btn-reset"
+          (click)="toggleAboutModal(true)"
+          [attr.aria-label]="link.ariaLabel"
+        >
+          {{ link.label }}
+        </button>
+      </ng-container>
     </nav>
   </div>
 </footer>
+
+<app-about-modal *ngIf="showAboutModal" (close)="toggleAboutModal(false)"></app-about-modal>

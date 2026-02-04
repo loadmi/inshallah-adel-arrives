@@ -10,20 +10,28 @@
     <!-- Input Card -->
     <div class="card input-card">
       <div class="card-header">
-        <h3 class="card-title">Select Time</h3>
+        <h3 class="card-title">When is Adel coming?</h3>
       </div>
       <div class="card-content">
         <div class="form-group">
-          <label for="worldTime">Adel says he'll be there at:</label>
-          <input
-            type="datetime-local"
-            id="worldTime"
-            class="time-input"
-            [(ngModel)]="worldTime"
-            (change)="predict()"
-          />
+          <label for="worldTime" class="input-label">Adel's Promised Arrival Time</label>
+          <div class="input-wrapper">
+            <span class="input-icon">🕒</span>
+            <input
+              type="datetime-local"
+              id="worldTime"
+              class="time-input"
+              [(ngModel)]="worldTime"
+              (ngModelChange)="predict()"
+            />
+          </div>
         </div>
-        <p class="input-hint">Select when Adel claims he will arrive</p>
+        
+        <div class="action-buttons">
+          <button class="btn btn-secondary reset-btn" (click)="resetToNow()">
+            <span class="btn-icon">🔄</span> Reset to Current Time
+          </button>
+        </div>
       </div>
     </div>
 

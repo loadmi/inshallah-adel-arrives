@@ -10,17 +10,22 @@
   left: 0;
   right: 0;
   width: 100%;
-  height: 64px;
+  height: 72px;
   background-color: var(--bg-light);
   box-shadow: var(--shadow-md);
   border-bottom: 1px solid var(--border-color);
   z-index: var(--z-fixed);
+
+  @media (min-width: 768px) {
+    height: 80px;
+  }
 }
 
 .navbar-container {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  gap: var(--spacing-6);
   max-width: var(--container-xl);
   height: 100%;
   margin: 0 auto;
@@ -28,6 +33,7 @@
 
   @media (min-width: 768px) {
     padding: 0 var(--spacing-6);
+    gap: var(--spacing-12);
   }
 }
 
@@ -52,23 +58,21 @@
   }
 }
 
-.brand-icon {
-  font-size: var(--font-size-2xl);
-}
-
-.brand-text {
-  font-family: var(--font-family-serif);
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-bold);
-  letter-spacing: var(--letter-spacing-tight);
+.brand-logo {
+  height: 52px;
+  width: auto;
+  display: block;
+  object-fit: contain;
+  transition: transform var(--transition-fast), filter var(--transition-fast);
 
   @media (min-width: 768px) {
-    font-size: var(--font-size-xl);
+    height: 60px;
   }
-}
 
-.brand-highlight {
-  color: var(--color-accent);
+  &:hover {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 8px rgba(187, 134, 252, 0.3));
+  }
 }
 
 /* --- Desktop Navigation --- */
@@ -189,7 +193,7 @@
 /* --- Mobile Menu Overlay --- */
 .mobile-overlay {
   position: fixed;
-  top: 64px;
+  top: 72px;
   left: 0;
   right: 0;
   bottom: 0;
@@ -212,7 +216,7 @@
 /* --- Mobile Navigation Menu --- */
 .mobile-menu {
   position: fixed;
-  top: 64px;
+  top: 72px;
   left: 0;
   right: 0;
   max-height: 0;

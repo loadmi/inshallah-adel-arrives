@@ -1,0 +1,35 @@
+<div class="modal-overlay" (click)="onClose()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>About Inshallah Adel Arrives</h2>
+      <button class="close-button" (click)="onClose()" aria-label="Close modal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <section class="intro-section">
+        <h3>The Creator</h3>
+        <p>
+          Hi, I'm <a href="https://github.com/loadmi" target="_blank" rel="noopener noreferrer">loadmi</a>. 
+          I'm a developer who enjoys building tools that solve (sometimes very specific) problems.
+        </p>
+      </section>
+
+      <section class="project-section">
+        <h3>The Project</h3>
+        <p>
+          <strong>Inshallah Adel Arrives</strong> is a data-driven attempt to predict the arrival time of a very specific individual: Adel.
+        </p>
+        <p>
+          We made this because Adel's punctuality is... legendary. Traditional calendars and clocks failed us, 
+          so we turned to machine learning. By tracking historical arrival data, we aim to provide a more 
+          realistic expectation of when he might actually show up.
+        </p>
+        <p>
+          It's part joke, part serious data science project, and entirely necessary for our sanity.
+        </p>
+      </section>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-primary" (click)="onClose()">Close</button>
+    </div>
+  </div>
+</div>
