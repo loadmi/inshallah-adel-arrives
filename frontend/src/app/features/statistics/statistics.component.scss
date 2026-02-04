@@ -1,0 +1,70 @@
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  text-align: center;
+
+  .stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+  }
+}
+
+.section {
+  margin-top: 2rem;
+
+  h2 {
+    margin-bottom: 1rem;
+    color: #333;
+  }
+}
+
+.day-stats {
+  .day-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.75rem;
+
+    .day-name {
+      width: 100px;
+      font-weight: 500;
+    }
+
+    .bar-container {
+      flex: 1;
+      height: 20px;
+      background: #e0e0e0;
+      border-radius: 10px;
+      margin: 0 1rem;
+      overflow: hidden;
+
+      .bar {
+        height: 100%;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+        border-radius: 10px;
+        transition: width 0.3s ease;
+      }
+    }
+
+    .day-value {
+      width: 120px;
+      text-align: right;
+      font-size: 0.9rem;
+      color: #666;
+    }
+  }
+}

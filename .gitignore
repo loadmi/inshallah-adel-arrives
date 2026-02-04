@@ -1,0 +1,43 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Build outputs
+dist/
+*.js.map
+*.js
+!*.config.js
+
+# Environment
+.env
+.env.local
+
+# Database & ML Models
+backend/data/*.db
+backend/data/*.db-*
+backend/data/models/*.json
+backend/data/models/*.bin
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Testing
+coverage/
+.nyc_output/
+
+# Temporary
+tmp/
+temp/

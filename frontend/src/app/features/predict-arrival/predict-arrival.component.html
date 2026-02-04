@@ -1,0 +1,63 @@
+<div class="container">
+  <h1>Adel Time Converter</h1>
+  <p class="subtitle">Convert World Time to Adel Standard Time (AST)</p>
+
+  <div class="prediction-form">
+    <div class="form-group">
+      <label for="worldTime">Adel says he'll be there at:</label>
+      <input
+        type="datetime-local"
+        id="worldTime"
+        [(ngModel)]="worldTime"
+        (change)="predict()"
+      />
+    </div>
+
+    @if (loading()) {
+      <div class="loading">Consulting the universe... Inshallah 🤲</div>
+    }
+
+    @if (error()) {
+      <div class="alert alert-error">{{ error() }}</div>
+    }
+
+    @if (prediction()) {
+      <div class="prediction-result">
+        <div class="time-comparison">
+          <div class="time-box world-time">
+            <div class="label">World Time</div>
+            <div class="time">{{ prediction()!.worldTime | date:'short' }}</div>
+          </div>
+
+          <div class="arrow">→</div>
+
+          <div class="time-box ast-time">
+            <div class="label">Adel Standard Time (AST)</div>
+            <div class="time highlighted">
+              {{ prediction()!.predictedAdelTime | date:'short' }}
+            </div>
+          </div>
+        </div>
+
+        <div class="delay-info">
+          <strong>Expected Delay:</strong> {{ prediction()!.delayMinutes }} minutes
+        </div>
+
+        <div class="confidence-badge" 
+             [style.background]="getConfidenceColor(prediction()!.confidence.level)">
+          Confidence: {{ prediction()!.confidence.level | titlecase }}
+          ({{ prediction()!.confidence.dataPointsUsed }} data points)
+        </div>
+
+        @if (prediction()!.similarEvents) {
+          <div class="similar-events">
+            <small>
+              Similar events: {{ prediction()!.similarEvents!.count }} entries, 
+              avg {{ prediction()!.similarEvents!.averageDelay }} min late
+            </small>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,68 @@
+<div class="container">
+  <h1>Record Actual Arrival</h1>
+  <p class="subtitle">Log when Adel said he'd arrive vs when he actually arrived</p>
+
+  <form (ngSubmit)="submit()" class="entry-form">
+    <div class="form-group">
+      <label for="worldTime">World Time (When he said he'd arrive)</label>
+      <input
+        type="datetime-local"
+        id="worldTime"
+        [(ngModel)]="worldTime"
+        name="worldTime"
+        required
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="adelTime">Adel Standard Time (When he actually arrived)</label>
+      <input
+        type="datetime-local"
+        id="adelTime"
+        [(ngModel)]="adelTime"
+        name="adelTime"
+        required
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="eventType">Event Type (optional)</label>
+      <select id="eventType" [(ngModel)]="eventType" name="eventType">
+        <option value="">Select type...</option>
+        <option value="meeting">Meeting</option>
+        <option value="party">Party</option>
+        <option value="coffee">Coffee</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="notes">Notes (optional)</label>
+      <textarea
+        id="notes"
+        [(ngModel)]="notes"
+        name="notes"
+        rows="3"
+        placeholder="Any additional context..."
+      ></textarea>
+    </div>
+
+    @if (error()) {
+      <div class="alert alert-error">{{ error() }}</div>
+    }
+
+    @if (success()) {
+      <div class="alert alert-success">
+        Entry recorded! Model is retraining... Inshallah 🤲
+      </div>
+    }
+
+    <button type="submit" [disabled]="loading()">
+      @if (loading()) {
+        Training Model...
+      } @else {
+        Record & Train Model
+      }
+    </button>
+  </form>
+</div>

@@ -1,0 +1,61 @@
+<div class="container">
+  <h1>Entry History</h1>
+  <p class="subtitle">All recorded arrivals</p>
+
+  @if (loading()) {
+    <div class="loading">Loading entries...</div>
+  }
+
+  @if (error()) {
+    <div class="alert alert-error">{{ error() }}</div>
+  }
+
+  @if (!loading() && entries().length === 0) {
+    <div class="empty-state">
+      <p>No entries yet. Start recording Adel's arrivals!</p>
+      <a routerLink="/record" class="btn">Record First Entry</a>
+    </div>
+  }
+
+  @if (entries().length > 0) {
+    <div class="entries-list">
+      @for (entry of entries(); track entry.id) {
+        <div class="entry-card">
+          <div class="entry-header">
+            <span class="date">{{ entry.createdAt | date:'medium' }}</span>
+            <span class="delay-badge" [class]="getDelayClass(entry.delayMinutes)">
+              {{ entry.delayMinutes }} min late
+            </span>
+          </div>
+
+          <div class="entry-times">
+            <div class="time-item">
+              <span class="label">Said:</span>
+              <span class="value">{{ entry.worldTime | date:'shortTime' }}</span>
+            </div>
+            <div class="arrow">→</div>
+            <div class="time-item">
+              <span class="label">Arrived:</span>
+              <span class="value">{{ entry.adelTime | date:'shortTime' }}</span>
+            </div>
+          </div>
+
+          @if (entry.eventType || entry.notes) {
+            <div class="entry-details">
+              @if (entry.eventType) {
+                <span class="tag">{{ entry.eventType }}</span>
+              }
+              @if (entry.notes) {
+                <p class="notes">{{ entry.notes }}</p>
+              }
+            </div>
+          }
+
+          <button class="delete-btn" (click)="deleteEntry(entry.id)">
+            🗑️ Delete
+          </button>
+        </div>
+      }
+    </div>
+  }
+</div>

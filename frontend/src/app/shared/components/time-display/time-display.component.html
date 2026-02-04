@@ -1,0 +1,11 @@
+<div class="time-display" [class.highlighted]="highlight">
+  @if (label) {
+    <span class="label">{{ label }}</span>
+  }
+  @if (time) {
+    <span class="time">{{ time | date:'shortTime' }}</span>
+    <span class="date">{{ time | date:'mediumDate' }}</span>
+  } @else {
+    <span class="time">--:--</span>
+  }
+</div>
