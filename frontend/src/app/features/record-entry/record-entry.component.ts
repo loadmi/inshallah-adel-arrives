@@ -9,11 +9,12 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AdelTimeService } from '../../core/services/adel-time.service';
 import { LateReason, VALID_LATE_REASONS, LATE_REASON_LABELS } from '../../core/models/time-entry.model';
+import { SharedSecretModalComponent } from '../../shared/components/shared-secret-modal/shared-secret-modal.component';
 
 @Component({
   selector: 'app-record-entry',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SharedSecretModalComponent],
   templateUrl: './record-entry.component.html',
   styleUrls: ['./record-entry.component.scss']
 })
@@ -27,10 +28,15 @@ export class RecordEntryComponent {
   loading = signal(false);
   success = signal(false);
   error = signal('');
+  isVerified = signal(false);
 
   // Expose constants to template
   readonly validReasons = VALID_LATE_REASONS;
   readonly reasonLabels = LATE_REASON_LABELS;
+
+  onVerified() {
+    this.isVerified.set(true);
+  }
 
   async submit() {
     if (!this.worldTime() || !this.adelTime()) {
