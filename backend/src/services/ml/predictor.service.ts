@@ -67,7 +67,13 @@ export class PredictorService {
     const entries = timeEntryRepository.findAll();
     const { features, labels } = featureEngineeringService.prepareTrainingData(entries);
     
-    const { model, metrics } = await modelTrainerService.trainModel(features, labels);
+    const result = await modelTrainerService.trainModel(features, labels);
+    if (!result) {
+      logger.error('Failed to train model: not enough data or training failed');
+      return;
+    }
+
+    const { model, metrics } = result;
     
     await modelStorageService.saveModel(model, {
       version: '1.0',

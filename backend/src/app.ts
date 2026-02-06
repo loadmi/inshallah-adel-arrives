@@ -19,8 +19,13 @@ export const app: Express = express();
 
 // Security middleware
 app.use(helmet());
+
+const corsOrigin = process.env.CORS_ORIGIN 
+  ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim())
+  : 'http://localhost:4200';
+
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:4200',
+  origin: corsOrigin,
   credentials: true
 }));
 

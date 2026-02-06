@@ -50,7 +50,7 @@ export class ModelStorageService {
         
         // Save weights as binary
         if (artifacts.weightData) {
-          const weightBuffer = Buffer.from(artifacts.weightData);
+          const weightBuffer = Buffer.from(artifacts.weightData as ArrayBuffer);
           fs.writeFileSync(this.weightsPath, weightBuffer);
         }
         

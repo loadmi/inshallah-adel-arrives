@@ -46,7 +46,7 @@ export class TimeEntryRepository {
     }
 
     const columns = results[0].columns;
-    return results[0].values.map(row => this.mapRowToEntry(columns, row));
+    return results[0].values.map((row: any[]) => this.mapRowToEntry(columns, row));
   }
 
   findById(id: number): TimeEntry | null {
