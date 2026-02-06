@@ -34,5 +34,10 @@ export const routes: Routes = [
     path: 'history',
     loadComponent: () => import('./features/history/history.component')
       .then(m => m.HistoryComponent)
+  },
+  {
+    path: 'adel',
+    loadComponent: () => import('./features/adel-mode/adel-mode.component')
+      .then(m => m.AdelModeComponent)
   }
 ];

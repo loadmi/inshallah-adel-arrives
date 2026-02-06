@@ -6,7 +6,7 @@
  */
 
 import { timeEntryRepository } from '../database/repositories/time-entry.repository';
-import { Statistics, HourlyStats, DailyStats } from '../models/statistics.model';
+import { Statistics, HourlyStats, DailyStats, Achievement } from '../models/statistics.model';
 
 export class StatisticsService {
   
@@ -31,7 +31,151 @@ export class StatisticsService {
       },
       byHour: this.calculateHourlyStats(entries),
       byDay: this.calculateDailyStats(entries),
-      recentTrend: this.calculateTrend(entries)
+      recentTrend: this.calculateTrend(entries),
+      gamification: this.calculateGamification(entries)
+    };
+  }
+
+  private calculateGamification(entries: any[]) {
+    // Sort entries by date (newest first)
+    const sortedEntries = [...entries].sort((a, b) => 
+      new Date(b.worldTime).getTime() - new Date(a.worldTime).getTime()
+    );
+
+    let currentStreak = 0;
+    let bestStreak = 0;
+    let tempStreak = 0;
+
+    // Calculate current streak (consecutive entries with delay <= 5)
+    for (const entry of sortedEntries) {
+      if (entry.delayMinutes <= 5) {
+        currentStreak++;
+      } else {
+        break;
+      }
+    }
+
+    // Calculate best streak
+    const chronologicalEntries = [...sortedEntries].reverse();
+    for (const entry of chronologicalEntries) {
+      if (entry.delayMinutes <= 5) {
+        tempStreak++;
+        if (tempStreak > bestStreak) bestStreak = tempStreak;
+      } else {
+        tempStreak = 0;
+      }
+    }
+
+    // Calculate Swiss Precision (twice on time in one day)
+    const onTimeEntries = entries.filter(e => e.delayMinutes <= 5);
+    const entriesByDate = new Map<string, number>();
+    onTimeEntries.forEach(e => {
+      const dateStr = new Date(e.worldTime).toISOString().split('T')[0];
+      entriesByDate.set(dateStr, (entriesByDate.get(dateStr) || 0) + 1);
+    });
+    const hasSwissPrecision = Array.from(entriesByDate.values()).some(count => count >= 2);
+
+    const allDelays = entries.map(e => e.delayMinutes);
+    const onTimePercentage = (allDelays.filter(d => d <= 5).length / allDelays.length) * 100;
+
+    const achievements: Achievement[] = [
+      {
+        id: 'first_appearance',
+        title: 'First Appearance',
+        description: 'Arrive for the first time',
+        icon: '👣',
+        unlocked: entries.length >= 1
+      },
+      {
+        id: 'on_time_hero',
+        title: 'On-Time Hero',
+        description: 'Arrive within 5 minutes of world time',
+        icon: '🦸',
+        unlocked: entries.some(e => e.delayMinutes <= 5)
+      },
+      {
+        id: 'streak_3',
+        title: 'Hat Trick',
+        description: '3 on-time arrivals in a row',
+        icon: '🎩',
+        unlocked: bestStreak >= 3
+      },
+      {
+        id: 'streak_5',
+        title: 'High Five',
+        description: '5 on-time arrivals in a row',
+        icon: '🖐️',
+        unlocked: bestStreak >= 5
+      },
+      {
+        id: 'streak_7',
+        title: 'Week of Wonder',
+        description: '7 on-time arrivals in a row',
+        icon: '🌈',
+        unlocked: bestStreak >= 7
+      },
+      {
+        id: 'early_bird',
+        title: 'Early Bird',
+        description: 'Arrive exactly on time (0 min delay)',
+        icon: '🐦',
+        unlocked: entries.some(e => e.delayMinutes === 0)
+      },
+      {
+        id: 'miracle',
+        title: 'Miracle',
+        description: 'Arrive early (before world time)',
+        icon: '✨',
+        unlocked: entries.some(e => e.delayMinutes < 0)
+      },
+      {
+        id: 'swiss_precision',
+        title: 'Swiss Precision',
+        description: 'Arrive on time twice in one day',
+        icon: '⌚',
+        unlocked: hasSwissPrecision
+      },
+      {
+        id: 'morning_person',
+        title: 'Morning Person',
+        description: 'Arrive on time before 10 AM',
+        icon: '☀️',
+        unlocked: entries.some(e => e.delayMinutes <= 5 && e.hourOfDay < 10)
+      },
+      {
+        id: 'night_owl',
+        title: 'Night Owl',
+        description: 'Arrive on time after 10 PM',
+        icon: '🦉',
+        unlocked: entries.some(e => e.delayMinutes <= 5 && e.hourOfDay >= 22)
+      },
+      {
+        id: 'weekend_warrior',
+        title: 'Weekend Warrior',
+        description: 'Arrive on time on a Friday or Saturday',
+        icon: '🛡️',
+        unlocked: entries.some(e => e.delayMinutes <= 5 && (e.dayOfWeek === 5 || e.dayOfWeek === 6))
+      },
+      {
+        id: 'we_believe_you',
+        title: 'We Believe You Now',
+        description: 'On-time rate exceeds 50%',
+        icon: '🤝',
+        unlocked: onTimePercentage > 50
+      },
+      {
+        id: 'frequent_flyer',
+        title: 'Frequent Flyer',
+        description: 'Arrive 50 times',
+        icon: '✈️',
+        unlocked: entries.length >= 50
+      }
+    ];
+
+    return {
+      currentStreak,
+      bestStreak,
+      achievements
     };
   }
 
@@ -144,8 +288,31 @@ export class StatisticsService {
         improving: false,
         last10Average: 0,
         previous10Average: 0
+      },
+      gamification: {
+        currentStreak: 0,
+        bestStreak: 0,
+        achievements: this.getDefaultAchievements()
       }
     };
+  }
+
+  private getDefaultAchievements(): Achievement[] {
+    return [
+      { id: 'first_appearance', title: 'First Appearance', description: 'Arrive for the first time', icon: '👣', unlocked: false },
+      { id: 'on_time_hero', title: 'On-Time Hero', description: 'Arrive within 5 minutes of world time', icon: '🦸', unlocked: false },
+      { id: 'streak_3', title: 'Hat Trick', description: '3 on-time arrivals in a row', icon: '🎩', unlocked: false },
+      { id: 'streak_5', title: 'High Five', description: '5 on-time arrivals in a row', icon: '🖐️', unlocked: false },
+      { id: 'streak_7', title: 'Week of Wonder', description: '7 on-time arrivals in a row', icon: '🌈', unlocked: false },
+      { id: 'early_bird', title: 'Early Bird', description: 'Arrive exactly on time (0 min delay)', icon: '🐦', unlocked: false },
+      { id: 'miracle', title: 'Miracle', description: 'Arrive early (before world time)', icon: '✨', unlocked: false },
+      { id: 'swiss_precision', title: 'Swiss Precision', description: 'Arrive on time twice in one day', icon: '⌚', unlocked: false },
+      { id: 'morning_person', title: 'Morning Person', description: 'Arrive on time before 10 AM', icon: '☀️', unlocked: false },
+      { id: 'night_owl', title: 'Night Owl', description: 'Arrive on time after 10 PM', icon: '🦉', unlocked: false },
+      { id: 'weekend_warrior', title: 'Weekend Warrior', description: 'Arrive on time on a Friday or Saturday', icon: '🛡️', unlocked: false },
+      { id: 'we_believe_you', title: 'We Believe You Now', description: 'On-time rate exceeds 50%', icon: '🤝', unlocked: false },
+      { id: 'frequent_flyer', title: 'Frequent Flyer', description: 'Arrive 50 times', icon: '✈️', unlocked: false }
+    ];
   }
 }
 

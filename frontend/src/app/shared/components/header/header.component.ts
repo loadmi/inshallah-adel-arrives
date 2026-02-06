@@ -23,7 +23,8 @@ export class HeaderComponent {
     { path: '/planner', label: 'Planner', icon: '📅' },
     { path: '/record', label: 'Record Entry', icon: '📝' },
     { path: '/history', label: 'History', icon: '📋' },
-    { path: '/statistics', label: 'Statistics', icon: '📊' }
+    { path: '/statistics', label: 'Statistics', icon: '📊' },
+    { path: '/adel', label: 'I am Adel', icon: '👑' }
   ];
 
   /**

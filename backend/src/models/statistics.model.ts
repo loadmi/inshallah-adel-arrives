@@ -19,6 +19,19 @@ export interface Statistics {
     last10Average: number;
     previous10Average: number;
   };
+  gamification: {
+    currentStreak: number;
+    bestStreak: number;
+    achievements: Achievement[];
+  };
+}
+
+export interface Achievement {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  unlocked: boolean;
 }
 
 export interface HourlyStats {

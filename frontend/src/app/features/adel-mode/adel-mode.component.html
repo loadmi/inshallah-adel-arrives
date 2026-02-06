@@ -1,0 +1,88 @@
+<div class="adel-container">
+  <header class="adel-header">
+    <h1>Welcome, Adel.</h1>
+    <p class="subtitle">"The man, the myth, the temporal anomaly."</p>
+    <div class="message-card">
+      <p>Listen, Adel. We love you, but the laws of physics usually suggest that time moves forward at a constant rate. This page is your personal command center to track your journey toward punctuality.</p>
+    </div>
+  </header>
+
+  <app-loading-spinner *ngIf="loading()"></app-loading-spinner>
+
+  <div *ngIf="!loading() && stats()" class="adel-content">
+    <!-- Streak Section -->
+    <section class="streak-section">
+      <div class="streak-card" [class.active]="stats()!.gamification.currentStreak > 0">
+        <div class="streak-icon">🔥</div>
+        <div class="streak-info">
+          <span class="label">Current Streak</span>
+          <span class="value">{{ stats()!.gamification.currentStreak }}</span>
+          <p class="streak-msg">{{ streakMessage }}</p>
+        </div>
+      </div>
+      
+      <div class="best-streak-card">
+        <div class="streak-icon">🏆</div>
+        <div class="streak-info">
+          <span class="label">Personal Best</span>
+          <span class="value">{{ stats()!.gamification.bestStreak }}</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stats Grid -->
+    <section class="stats-grid">
+      <div class="stat-item">
+        <span class="stat-label">On-Time Rate</span>
+        <span class="stat-value" [style.color]="stats()!.overall.onTimePercentage > 50 ? '#4caf50' : '#ff9800'">
+          {{ stats()!.overall.onTimePercentage | number:'1.0-1' }}%
+        </span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Avg. Lateness</span>
+        <span class="stat-value">{{ stats()!.overall.averageDelay }} min</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Total Arrivals</span>
+        <span class="stat-value">{{ stats()!.overall.totalEntries }}</span>
+      </div>
+    </section>
+
+    <!-- Achievements -->
+    <section class="achievements-section">
+      <h2>Your Achievements</h2>
+      
+      <div *ngIf="stats()!.gamification.achievements.length === 0" class="empty-achievements">
+        <div class="empty-icon">🏅</div>
+        <p>No achievements yet. Start recording arrivals to unlock them!</p>
+      </div>
+
+      <div *ngIf="stats()!.gamification.achievements.length > 0" class="achievements-list">
+        <div *ngFor="let achievement of stats()!.gamification.achievements"
+             class="achievement-card"
+             [class.locked]="!achievement.unlocked">
+          <div class="achievement-icon">{{ achievement.unlocked ? achievement.icon : '🔒' }}</div>
+          <div class="achievement-details">
+            <h3>{{ achievement.title }}</h3>
+            <p>{{ achievement.description }}</p>
+          </div>
+          <div *ngIf="achievement.unlocked" class="unlocked-badge">Unlocked</div>
+        </div>
+      </div>
+
+      <div *ngIf="stats()!.gamification.achievements.length > 0" class="achievement-progress">
+        <span class="progress-text">
+          {{ unlockedAchievements.length }} / {{ stats()!.gamification.achievements.length }} Unlocked
+        </span>
+      </div>
+    </section>
+
+    <footer class="adel-footer">
+      <p>Keep it up, Adel. Inshallah, you'll be on time next time.</p>
+    </footer>
+  </div>
+
+  <div *ngIf="error()" class="error-message">
+    {{ error() }}
+  </div>
+</div>
