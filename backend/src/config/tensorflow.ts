@@ -2,7 +2,7 @@
  * TensorFlow configuration
  * - Model architecture
  * - Training hyperparameters
- * - Feature normalization settings
+ * - Feature descriptions
  */
 
 export const ML_CONFIG = {
@@ -17,15 +17,18 @@ export const ML_CONFIG = {
   },
   
   features: {
-    // Feature names and normalization ranges
-    hourOfDay: { max: 24, min: 0 },
-    dayOfWeek: { max: 7, min: 0 },
-    minutesSinceMidnight: { max: 1440, min: 0 }
+    // Feature descriptions (6 total):
+    // [0] hourSin              - sin(2π * hour / 24)
+    // [1] hourCos              - cos(2π * hour / 24)
+    // [2] daySin               - sin(2π * dayOfWeek / 7)
+    // [3] dayCos               - cos(2π * dayOfWeek / 7)
+    // [4] isWeekend            - 0 or 1
+    // [5] rollingAvgDelay      - normalized [0, 1]
   },
   
   modelArchitecture: {
-    inputSize: 3,  // [hourOfDay, dayOfWeek, minutesSinceMidnight]
-    hiddenLayers: [16, 8],
+    inputSize: 6,  // [hourSin, hourCos, daySin, dayCos, isWeekend, rollingAvgDelay]
+    hiddenLayers: [32, 16, 8],
     outputSize: 1  // delay in minutes
   }
 };

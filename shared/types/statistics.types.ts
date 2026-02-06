@@ -32,9 +32,24 @@ export interface RecentTrend {
   previous10Average: number;
 }
 
+export interface Achievement {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  unlocked: boolean;
+}
+
+export interface Gamification {
+  currentStreak: number;
+  bestStreak: number;
+  achievements: Achievement[];
+}
+
 export interface Statistics {
   overall: OverallStatistics;
   byHour: HourlyStats[];
   byDay: DailyStats[];
   recentTrend: RecentTrend;
+  gamification: Gamification;
 }

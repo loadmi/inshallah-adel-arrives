@@ -7,6 +7,7 @@ import { Request, Response, NextFunction } from 'express';
 import { timeEntryRepository } from '../database/repositories/time-entry.repository';
 import { CreateTimeEntryDTO, TimeEntryInput } from '../models/time-entry.model';
 import { predictorService } from '../services/ml/predictor.service';
+import { successResponse, errorResponse } from '../utils/response';
 import { logger } from '../utils/logger';
 
 class EntriesController {
@@ -19,9 +20,9 @@ class EntriesController {
       const worldTime = new Date(input.worldTime);
       const adelTime = new Date(input.adelTime);
 
-      // Validate
+      // Validate date formats
       if (isNaN(worldTime.getTime()) || isNaN(adelTime.getTime())) {
-        return res.status(400).json({ error: 'Invalid date format' });
+        return res.status(400).json(errorResponse('Invalid date format'));
       }
 
       // Calculate derived fields
@@ -50,11 +51,7 @@ class EntriesController {
         logger.error('Background training failed:', err);
       });
 
-      res.status(201).json({
-        success: true,
-        data: entry,
-        message: 'Entry created and model retraining initiated'
-      });
+      res.status(201).json(successResponse(entry, 'Entry created and model retraining initiated'));
 
     } catch (error) {
       next(error);
@@ -64,7 +61,7 @@ class EntriesController {
   async getAll(req: Request, res: Response, next: NextFunction) {
     try {
       const entries = timeEntryRepository.findAll();
-      res.json({ success: true, data: entries });
+      res.json(successResponse(entries));
     } catch (error) {
       next(error);
     }
@@ -76,10 +73,10 @@ class EntriesController {
       const entry = timeEntryRepository.findById(id);
 
       if (!entry) {
-        return res.status(404).json({ error: 'Entry not found' });
+        return res.status(404).json(errorResponse('Entry not found'));
       }
 
-      res.json({ success: true, data: entry });
+      res.json(successResponse(entry));
     } catch (error) {
       next(error);
     }
@@ -91,7 +88,7 @@ class EntriesController {
       const deleted = timeEntryRepository.delete(id);
 
       if (!deleted) {
-        return res.status(404).json({ error: 'Entry not found' });
+        return res.status(404).json(errorResponse('Entry not found'));
       }
 
       // Trigger model retraining
@@ -99,7 +96,7 @@ class EntriesController {
         logger.error('Background training failed:', err);
       });
 
-      res.json({ success: true, message: 'Entry deleted' });
+      res.json(successResponse(null, 'Entry deleted'));
     } catch (error) {
       next(error);
     }

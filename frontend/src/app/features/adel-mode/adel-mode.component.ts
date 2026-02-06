@@ -1,5 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { firstValueFrom } from 'rxjs';
 import { AdelTimeService } from '../../core/services/adel-time.service';
 import { Statistics, Achievement } from '../../core/models/statistics.model';
 import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
@@ -24,8 +25,8 @@ export class AdelModeComponent implements OnInit {
 
   async loadStats(): Promise<void> {
     try {
-      const result = await this.adelTimeService.getStatistics().toPromise();
-      this.stats.set(result!);
+      const result = await firstValueFrom(this.adelTimeService.getStatistics());
+      this.stats.set(result);
     } catch (err) {
       this.error.set('Failed to load your legendary stats, Adel.');
       console.error(err);

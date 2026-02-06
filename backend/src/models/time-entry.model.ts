@@ -1,33 +1,17 @@
 /**
  * Time Entry data model
- * - Interface definitions
- * - DTOs for create/update
- * - Validation schemas
+ * Re-exports shared types and adds backend-specific DTOs
  */
 
-// Valid late reason values
-export type LateReason = 'traffic' | 'family_emergency' | 'work_emergency' | 'technical_difficulties' | 'other';
+// Re-export shared types as the single source of truth
+export { LateReason, VALID_LATE_REASONS, LATE_REASON_LABELS } from '../../../shared/types/time-entry.types';
+export type { TimeEntry } from '../../../shared/types/time-entry.types';
 
-export const VALID_LATE_REASONS: LateReason[] = [
-  'traffic',
-  'family_emergency',
-  'work_emergency',
-  'technical_difficulties',
-  'other'
-];
+import type { LateReason } from '../../../shared/types/time-entry.types';
 
-export interface TimeEntry {
-  id: number;
-  worldTime: Date;
-  adelTime: Date;
-  delayMinutes: number;
-  hourOfDay: number;
-  dayOfWeek: number;
-  minutesSinceMidnight: number;
-  reason?: LateReason;
-  createdAt: Date;
-}
-
+/**
+ * DTO for creating a new time entry (backend-specific, with computed fields)
+ */
 export interface CreateTimeEntryDTO {
   worldTime: Date;
   adelTime: Date;
@@ -38,6 +22,9 @@ export interface CreateTimeEntryDTO {
   reason?: LateReason;
 }
 
+/**
+ * Input from API requests (raw string dates)
+ */
 export interface TimeEntryInput {
   worldTime: string;  // ISO date string
   adelTime: string;   // ISO date string

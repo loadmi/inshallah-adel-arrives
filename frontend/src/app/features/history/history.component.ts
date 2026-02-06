@@ -7,6 +7,7 @@ import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { firstValueFrom } from 'rxjs';
 import { AdelTimeService } from '../../core/services/adel-time.service';
 import { TimeEntry, LateReason, LATE_REASON_LABELS } from '../../core/models/time-entry.model';
 
@@ -77,8 +78,8 @@ export class HistoryComponent implements OnInit {
     this.error.set('');
     
     try {
-      const result = await this.adelTimeService.getAllEntries().toPromise();
-      this.entries.set(result || []);
+      const result = await firstValueFrom(this.adelTimeService.getAllEntries());
+      this.entries.set(result);
     } catch (err) {
       this.error.set('Failed to load entries. Please try again.');
       console.error(err);
@@ -116,7 +117,7 @@ export class HistoryComponent implements OnInit {
 
   async deleteEntry(id: number) {
     try {
-      await this.adelTimeService.deleteEntry(id).toPromise();
+      await firstValueFrom(this.adelTimeService.deleteEntry(id));
       this.entries.set(this.entries().filter(e => e.id !== id));
       this.entryToDelete.set(null);
     } catch (err) {

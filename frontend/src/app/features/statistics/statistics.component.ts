@@ -6,6 +6,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 import { AdelTimeService } from '../../core/services/adel-time.service';
 import { Statistics } from '../../core/models/statistics.model';
 
@@ -29,8 +30,8 @@ export class StatisticsComponent implements OnInit {
 
   async loadStatistics() {
     try {
-      const result = await this.adelTimeService.getStatistics().toPromise();
-      this.stats.set(result!);
+      const result = await firstValueFrom(this.adelTimeService.getStatistics());
+      this.stats.set(result);
     } catch (err) {
       this.error.set('Failed to load statistics');
       console.error(err);

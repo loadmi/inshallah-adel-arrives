@@ -6,6 +6,7 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { firstValueFrom } from 'rxjs';
 import { AdelTimeService } from '../../core/services/adel-time.service';
 import { DateUtilsService } from '../../core/services/date-utils.service';
 import { PredictionResponse } from '../../core/models/prediction.model';
@@ -72,11 +73,11 @@ export class PredictArrivalComponent implements OnInit {
       this.error.set('');
 
       try {
-        const result = await this.adelTimeService.getPrediction(
-          new Date(this.worldTime())
-        ).toPromise();
+        const result = await firstValueFrom(
+          this.adelTimeService.getPrediction(new Date(this.worldTime()))
+        );
 
-        this.prediction.set(result!);
+        this.prediction.set(result);
       } catch (err) {
         this.error.set('Failed to get prediction');
         console.error(err);

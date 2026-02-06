@@ -6,6 +6,7 @@
  */
 
 import { timeEntryRepository } from '../database/repositories/time-entry.repository';
+import { TimeEntry } from '../models/time-entry.model';
 import { Statistics, HourlyStats, DailyStats, Achievement } from '../models/statistics.model';
 
 export class StatisticsService {
@@ -36,7 +37,7 @@ export class StatisticsService {
     };
   }
 
-  private calculateGamification(entries: any[]) {
+  private calculateGamification(entries: TimeEntry[]) {
     // Sort entries by date (newest first)
     const sortedEntries = [...entries].sort((a, b) => 
       new Date(b.worldTime).getTime() - new Date(a.worldTime).getTime()
@@ -179,7 +180,7 @@ export class StatisticsService {
     };
   }
 
-  private calculateHourlyStats(entries: any[]): HourlyStats[] {
+  private calculateHourlyStats(entries: TimeEntry[]): HourlyStats[] {
     const hourlyMap = new Map<number, number[]>();
 
     entries.forEach(entry => {
@@ -204,7 +205,7 @@ export class StatisticsService {
     return stats;
   }
 
-  private calculateDailyStats(entries: any[]): DailyStats[] {
+  private calculateDailyStats(entries: TimeEntry[]): DailyStats[] {
     const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const dailyMap = new Map<number, number[]>();
 
@@ -231,7 +232,7 @@ export class StatisticsService {
     return stats;
   }
 
-  private calculateTrend(entries: any[]) {
+  private calculateTrend(entries: TimeEntry[]) {
     if (entries.length < 20) {
       return {
         improving: false,

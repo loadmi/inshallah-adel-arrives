@@ -7,6 +7,7 @@ import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 import { AdelTimeService } from '../../core/services/adel-time.service';
 import { LateReason, VALID_LATE_REASONS, LATE_REASON_LABELS } from '../../core/models/time-entry.model';
 import { SharedSecretModalComponent } from '../../shared/components/shared-secret-modal/shared-secret-modal.component';
@@ -48,11 +49,11 @@ export class RecordEntryComponent {
     this.error.set('');
 
     try {
-      await this.adelTimeService.createEntry({
+      await firstValueFrom(this.adelTimeService.createEntry({
         worldTime: new Date(this.worldTime()).toISOString(),
         adelTime: new Date(this.adelTime()).toISOString(),
         reason: this.reason() || undefined
-      }).toPromise();
+      }));
 
       this.success.set(true);
       

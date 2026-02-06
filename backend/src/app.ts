@@ -39,6 +39,11 @@ app.use(compression());
 // Request logging
 app.use(requestLogger);
 
+// Health check (before API routes and static serving)
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
 // API routes
 app.use('/api', routes);
 
@@ -51,11 +56,6 @@ if (process.env.NODE_ENV === 'production') {
     res.sendFile(path.join(frontendPath, 'index.html'));
   });
 }
-
-// Health check
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
-});
 
 // Error handling (must be last)
 app.use(errorHandler);
