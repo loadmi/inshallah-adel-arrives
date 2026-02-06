@@ -20,6 +20,7 @@ export class HeaderComponent {
   /** Navigation items for the menu */
   navItems = [
     { path: '/predict', label: 'Predictions', icon: '🔮' },
+    { path: '/planner', label: 'Planner', icon: '📅' },
     { path: '/record', label: 'Record Entry', icon: '📝' },
     { path: '/history', label: 'History', icon: '📋' },
     { path: '/statistics', label: 'Statistics', icon: '📊' }

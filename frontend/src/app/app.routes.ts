@@ -21,6 +21,11 @@ export const routes: Routes = [
       .then(m => m.PredictArrivalComponent)
   },
   {
+    path: 'planner',
+    loadComponent: () => import('./features/planner/planner.component')
+      .then(m => m.PlannerComponent)
+  },
+  {
     path: 'statistics',
     loadComponent: () => import('./features/statistics/statistics.component')
       .then(m => m.StatisticsComponent)

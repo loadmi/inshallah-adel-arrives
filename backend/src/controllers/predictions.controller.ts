@@ -5,7 +5,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { predictorService } from '../services/ml/predictor.service';
 import { modelStorageService } from '../services/ml/model-storage.service';
-import { PredictionRequest } from '../models/prediction.model';
+import { PredictionRequest, BatchPredictionRequest } from '../models/prediction.model';
 
 class PredictionsController {
   
@@ -21,6 +21,28 @@ class PredictionsController {
       const prediction = await predictorService.predict(worldTime);
       
       res.json({ success: true, data: prediction });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async predictBatch(req: Request, res: Response, next: NextFunction) {
+    try {
+      const input: BatchPredictionRequest = req.body;
+      
+      if (!input.worldTimes || !Array.isArray(input.worldTimes)) {
+        return res.status(400).json({ error: 'worldTimes must be an array' });
+      }
+
+      const worldTimes = input.worldTimes.map(t => new Date(t));
+      
+      if (worldTimes.some(t => isNaN(t.getTime()))) {
+        return res.status(400).json({ error: 'Invalid date format in worldTimes' });
+      }
+
+      const predictions = await predictorService.predictBatch(worldTimes);
+      
+      res.json({ success: true, data: { predictions } });
     } catch (error) {
       next(error);
     }

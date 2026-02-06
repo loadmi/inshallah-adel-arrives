@@ -7,6 +7,10 @@ export interface PredictionRequest {
   worldTime: string;  // ISO date string
 }
 
+export interface BatchPredictionRequest {
+  worldTimes: string[]; // Array of ISO date strings
+}
+
 export interface PredictionConfidence {
   level: 'low' | 'medium' | 'high';
   percentage?: number;
@@ -24,6 +28,10 @@ export interface PredictionResponse {
   delayMinutes: number;
   confidence: PredictionConfidence;
   similarEvents?: SimilarEvents;
+}
+
+export interface BatchPredictionResponse {
+  predictions: PredictionResponse[];
 }
 
 export interface ModelInfo {

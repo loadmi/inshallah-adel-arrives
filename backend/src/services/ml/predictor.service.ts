@@ -61,6 +61,51 @@ export class PredictorService {
     };
   }
 
+  async predictBatch(worldTimes: Date[]): Promise<PredictionResponse[]> {
+    const entryCount = timeEntryRepository.count();
+    const predictions: PredictionResponse[] = [];
+
+    // Ensure model is loaded/trained if we have enough data
+    if (entryCount >= ML_CONFIG.training.minSamples && !this.model) {
+      await this.trainNewModel();
+    }
+
+    for (const worldTime of worldTimes) {
+      if (entryCount < ML_CONFIG.training.minSamples) {
+        predictions.push(this.fallbackPrediction(worldTime, entryCount));
+        continue;
+      }
+
+      // Extract features
+      const features = featureEngineeringService.extractFeaturesFromDate(worldTime);
+      const featureTensor = tf.tensor2d([features]);
+
+      // Predict
+      const prediction = this.model!.predict(featureTensor) as tf.Tensor;
+      const delayMinutes = Math.round((await prediction.data())[0]);
+
+      // Cleanup
+      featureTensor.dispose();
+      prediction.dispose();
+
+      // Calculate predicted arrival time
+      const predictedAdelTime = new Date(worldTime.getTime() + delayMinutes * 60000);
+
+      // Get confidence metrics
+      const confidence = this.calculateConfidence(entryCount, worldTime);
+
+      predictions.push({
+        worldTime,
+        predictedAdelTime,
+        delayMinutes,
+        confidence,
+        similarEvents: this.getSimilarEvents(worldTime)
+      });
+    }
+
+    return predictions;
+  }
+
   async trainNewModel(): Promise<void> {
     logger.info('Training new model...');
     

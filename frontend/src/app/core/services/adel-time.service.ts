@@ -12,7 +12,9 @@ import {
 } from '../models/time-entry.model';
 import {
   PredictionRequest,
-  PredictionResponse
+  PredictionResponse,
+  BatchPredictionRequest,
+  BatchPredictionResponse
 } from '../models/prediction.model';
 import { Statistics } from '../models/statistics.model';
 
@@ -51,6 +53,17 @@ export class AdelTimeService {
       `${this.apiUrl}/predictions/predict`,
       request
     ).pipe(map(res => this.parsePrediction(res.data)));
+  }
+
+  getBatchPredictions(worldTimes: Date[]): Observable<PredictionResponse[]> {
+    const request: BatchPredictionRequest = {
+      worldTimes: worldTimes.map(t => t.toISOString())
+    };
+
+    return this.http.post<ApiResponse<BatchPredictionResponse>>(
+      `${this.apiUrl}/predictions/predict-batch`,
+      request
+    ).pipe(map(res => res.data.predictions.map(p => this.parsePrediction(p))));
   }
 
   // Statistics

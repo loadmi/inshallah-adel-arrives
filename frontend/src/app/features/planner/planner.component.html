@@ -1,0 +1,138 @@
+<div class="planner-container">
+  <header class="planner-header">
+    <h1 class="title">Temporal Planner</h1>
+    <p class="subtitle">Find the perfect window for your next meeting with Adel.</p>
+  </header>
+
+  @if (loading()) {
+    <div class="loading-container">
+      <app-loading-spinner></app-loading-spinner>
+      <p>Calculating temporal probabilities...</p>
+    </div>
+  } @else if (error()) {
+    <div class="error-message">
+      <span class="error-icon">⚠️</span>
+      {{ error() }}
+    </div>
+  } @else {
+    <!-- Best Time Suggestion -->
+    @if (bestSlot()) {
+      <div class="best-time-card" (click)="selectSlot(bestSlot()!)">
+        <div class="best-time-badge">OPTIMAL WINDOW</div>
+        <div class="best-time-content">
+          <div class="best-time-info">
+            <span class="best-time-label">Best time to meet:</span>
+            <span class="best-time-value">
+              {{ formatDay(bestSlot()!.time) }}, {{ formatDate(bestSlot()!.time) }} at {{ formatTime(bestSlot()!.time) }}
+            </span>
+          </div>
+          <div class="best-time-prediction">
+            <span class="prediction-label">Predicted Delay:</span>
+            <span class="prediction-value delay-low">{{ formatDuration(bestSlot()!.prediction!.delayMinutes) }}</span>
+          </div>
+        </div>
+        <div class="best-time-action">
+          <button class="btn btn-primary">View Details</button>
+        </div>
+      </div>
+    }
+
+    <!-- Planner Grid -->
+    <div class="planner-grid-wrapper">
+      <div class="planner-grid">
+        @for (day of days(); track day.date) {
+          <div class="day-column">
+            <div class="day-header">
+              <span class="day-name">{{ formatDay(day.date) }}</span>
+              <span class="day-date">{{ formatDate(day.date) }}</span>
+            </div>
+            <div class="slots-container">
+              @for (slot of day.slots; track slot.time) {
+                <div 
+                  class="slot-cell" 
+                  [class]="slot.prediction ? getDelayClass(slot.prediction.delayMinutes) : ''"
+                  [class.is-best]="slot === bestSlot()"
+                  (click)="selectSlot(slot)"
+                >
+                  <span class="slot-time">{{ formatTime(slot.time) }}</span>
+                  @if (slot.prediction) {
+                    <span class="slot-delay">+{{ slot.prediction.delayMinutes }}m</span>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="planner-legend">
+      <div class="legend-item">
+        <span class="legend-color delay-low"></span>
+        <span class="legend-label">Low Delay (0-15m)</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-color delay-medium"></span>
+        <span class="legend-label">Medium Delay (16-45m)</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-color delay-high"></span>
+        <span class="legend-label">High Delay (>45m)</span>
+      </div>
+    </div>
+  }
+
+  <!-- Detail Modal -->
+  @if (selectedSlot()) {
+    <div class="modal-overlay" (click)="closeDetails()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <button class="close-btn" (click)="closeDetails()">&times;</button>
+        
+        <div class="modal-header">
+          <h2>Prediction Details</h2>
+          <p>{{ formatDay(selectedSlot()!.time) }}, {{ formatDate(selectedSlot()!.time) }} at {{ formatTime(selectedSlot()!.time) }}</p>
+        </div>
+
+        <div class="modal-body">
+          <div class="prediction-summary">
+            <div class="stat-box">
+              <span class="stat-label">Predicted Delay</span>
+              <span class="stat-value" [class]="getDelayClass(selectedSlot()!.prediction!.delayMinutes)">
+                {{ formatDuration(selectedSlot()!.prediction!.delayMinutes) }}
+              </span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-label">Confidence</span>
+              <span class="stat-value confidence-{{ selectedSlot()!.prediction!.confidence.level }}">
+                {{ selectedSlot()!.prediction!.confidence.level | titlecase }}
+              </span>
+            </div>
+          </div>
+
+          @if (selectedSlot()!.prediction!.similarEvents) {
+            <div class="similar-events">
+              <h3>Historical Context</h3>
+              <p>Based on {{ selectedSlot()!.prediction!.similarEvents!.count }} similar events at this time of day, the average delay is {{ formatDuration(selectedSlot()!.prediction!.similarEvents!.averageDelay) }}.</p>
+            </div>
+          }
+
+          <div class="advice-box">
+            <h3>Pro Tip</h3>
+            @if (selectedSlot()!.prediction!.delayMinutes <= 15) {
+              <p>This is a rare window of punctuality! Seize the opportunity and set the meeting now.</p>
+            } @else if (selectedSlot()!.prediction!.delayMinutes <= 45) {
+              <p>Standard Adel behavior. Bring a book or catch up on some podcasts while you wait.</p>
+            } @else {
+              <p>Extreme temporal displacement detected. Maybe consider a Zoom call or just meet next week.</p>
+            }
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-secondary" (click)="closeDetails()">Close</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

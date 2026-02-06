@@ -6,6 +6,10 @@ export interface PredictionRequest {
   worldTime: string;  // ISO date string
 }
 
+export interface BatchPredictionRequest {
+  worldTimes: string[]; // Array of ISO date strings
+}
+
 export interface PredictionResponse {
   worldTime: Date;
   predictedAdelTime: Date;
@@ -19,6 +23,10 @@ export interface PredictionResponse {
     averageDelay: number;
     count: number;
   };
+}
+
+export interface BatchPredictionResponse {
+  predictions: PredictionResponse[];
 }
 
 export interface ModelInfo {
