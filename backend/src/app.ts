@@ -39,11 +39,6 @@ app.use(compression());
 // Request logging
 app.use(requestLogger);
 
-// Health check (before API routes and static serving)
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
-});
-
 // API routes
 app.use('/api', routes);
 

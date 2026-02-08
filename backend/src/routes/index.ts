@@ -9,6 +9,11 @@ import statisticsRouter from './statistics.routes';
 
 const router = Router();
 
+// Health check
+router.get('/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
 router.use('/entries', entriesRouter);
 router.use('/predictions', predictionsRouter);
 router.use('/statistics', statisticsRouter);
