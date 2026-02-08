@@ -180,6 +180,18 @@
             <div class="delete-confirm-overlay">
               <div class="delete-confirm-dialog">
                 <p class="confirm-message">Delete this entry?</p>
+                <div class="password-field">
+                  <input
+                    type="password"
+                    class="password-input"
+                    placeholder="Enter delete password"
+                    [(ngModel)]="deletePassword"
+                    (keyup.enter)="deleteEntry(entry.id)"
+                  />
+                  @if (deletePasswordError()) {
+                    <span class="password-error">{{ deletePasswordError() }}</span>
+                  }
+                </div>
                 <div class="confirm-actions">
                   <button class="confirm-btn confirm-btn--cancel" (click)="cancelDelete()">
                     Cancel

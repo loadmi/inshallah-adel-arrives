@@ -32,6 +32,8 @@ export class HistoryComponent implements OnInit {
   searchQuery = signal('');
   activeFilter = signal<FilterType>('all');
   entryToDelete = signal<TimeEntry | null>(null);
+  deletePassword = signal('');
+  deletePasswordError = signal('');
 
   // Computed filtered entries
   filteredEntries = computed(() => {
@@ -113,15 +115,30 @@ export class HistoryComponent implements OnInit {
 
   cancelDelete() {
     this.entryToDelete.set(null);
+    this.deletePassword.set('');
+    this.deletePasswordError.set('');
   }
 
   async deleteEntry(id: number) {
+    const password = this.deletePassword().trim();
+    if (!password) {
+      this.deletePasswordError.set('Password is required');
+      return;
+    }
+
+    this.deletePasswordError.set('');
+
     try {
-      await firstValueFrom(this.adelTimeService.deleteEntry(id));
+      await firstValueFrom(this.adelTimeService.deleteEntry(id, password));
       this.entries.set(this.entries().filter(e => e.id !== id));
       this.entryToDelete.set(null);
-    } catch (err) {
-      this.error.set('Failed to delete entry. Please try again.');
+      this.deletePassword.set('');
+    } catch (err: any) {
+      if (err?.message?.includes('Invalid delete password') || err?.status === 403) {
+        this.deletePasswordError.set('Wrong password');
+      } else {
+        this.error.set('Failed to delete entry. Please try again.');
+      }
       console.error(err);
     }
   }

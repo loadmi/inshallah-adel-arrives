@@ -84,6 +84,14 @@ class EntriesController {
 
   async delete(req: Request, res: Response, next: NextFunction) {
     try {
+      // Verify delete password
+      const password = req.headers['x-delete-password'] as string;
+      const requiredPassword = process.env.DELETE_PASSWORD;
+
+      if (!requiredPassword || password !== requiredPassword) {
+        return res.status(403).json(errorResponse('Invalid delete password'));
+      }
+
       const id = parseInt(req.params.id);
       const deleted = timeEntryRepository.delete(id);
 

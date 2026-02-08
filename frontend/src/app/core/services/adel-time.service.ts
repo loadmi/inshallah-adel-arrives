@@ -3,7 +3,7 @@
  */
 
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
@@ -39,8 +39,9 @@ export class AdelTimeService {
     ).pipe(map(res => res.data.map(e => this.parseEntry(e))));
   }
 
-  deleteEntry(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/entries/${id}`);
+  deleteEntry(id: number, password: string): Observable<void> {
+    const headers = new HttpHeaders().set('x-delete-password', password);
+    return this.http.delete<void>(`${this.apiUrl}/entries/${id}`, { headers });
   }
 
   // Predictions
