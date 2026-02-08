@@ -79,6 +79,16 @@ export class StatisticsService {
     const allDelays = entries.map(e => e.delayMinutes);
     const onTimePercentage = (allDelays.filter(d => d <= 5).length / allDelays.length) * 100;
 
+    // New calculations for achievements
+    const exactOnTimeCount = entries.filter(e => e.delayMinutes === 0).length;
+    const lunchBreakOnTimeCount = entries.filter(e => 
+      e.delayMinutes <= 5 && e.hourOfDay >= 12 && e.hourOfDay < 14
+    ).length;
+    const uniqueOnTimeHours = new Set(
+      entries.filter(e => e.delayMinutes <= 5).map(e => e.hourOfDay)
+    ).size;
+    const trend = this.calculateTrend(entries);
+
     const achievements: Achievement[] = [
       {
         id: 'first_appearance',
@@ -86,6 +96,41 @@ export class StatisticsService {
         description: 'Arrive for the first time',
         icon: '👣',
         unlocked: entries.length >= 1
+      },
+      {
+        id: 'double_digits',
+        title: 'Double Digits',
+        description: 'Arrive 10 times',
+        icon: '🔟',
+        unlocked: entries.length >= 10
+      },
+      {
+        id: 'quarter_century',
+        title: 'Quarter Century',
+        description: 'Arrive 25 times',
+        icon: '🥉',
+        unlocked: entries.length >= 25
+      },
+      {
+        id: 'frequent_flyer',
+        title: 'Frequent Flyer',
+        description: 'Arrive 50 times',
+        icon: '✈️',
+        unlocked: entries.length >= 50
+      },
+      {
+        id: 'silver_jubilee',
+        title: 'Silver Jubilee',
+        description: 'Arrive 75 times',
+        icon: '🥈',
+        unlocked: entries.length >= 75
+      },
+      {
+        id: 'centurion',
+        title: 'Centurion',
+        description: 'Arrive 100 times',
+        icon: '🥇',
+        unlocked: entries.length >= 100
       },
       {
         id: 'on_time_hero',
@@ -123,6 +168,13 @@ export class StatisticsService {
         unlocked: entries.some(e => e.delayMinutes === 0)
       },
       {
+        id: 'sniper',
+        title: 'Sniper',
+        description: 'Arrive exactly on time 3 times',
+        icon: '🎯',
+        unlocked: exactOnTimeCount >= 3
+      },
+      {
         id: 'miracle',
         title: 'Miracle',
         description: 'Arrive early (before world time)',
@@ -151,11 +203,32 @@ export class StatisticsService {
         unlocked: entries.some(e => e.delayMinutes <= 5 && e.hourOfDay >= 22)
       },
       {
+        id: 'never_late_for_food',
+        title: 'Never late for food.',
+        description: 'Arrive on time 3 times between 12 PM and 2 PM',
+        icon: '🍕',
+        unlocked: lunchBreakOnTimeCount >= 3
+      },
+      {
         id: 'weekend_warrior',
         title: 'Weekend Warrior',
         description: 'Arrive on time on a Friday or Saturday',
         icon: '🛡️',
         unlocked: entries.some(e => e.delayMinutes <= 5 && (e.dayOfWeek === 5 || e.dayOfWeek === 6))
+      },
+      {
+        id: 'temporal_tourist',
+        title: 'Temporal Tourist',
+        description: 'Arrive on time in 5 different hours of the day',
+        icon: '🗺️',
+        unlocked: uniqueOnTimeHours >= 5
+      },
+      {
+        id: 'reformed_character',
+        title: 'Reformed Character',
+        description: 'Show an improving arrival trend',
+        icon: '📈',
+        unlocked: trend.improving && entries.length >= 20
       },
       {
         id: 'we_believe_you',
@@ -165,11 +238,11 @@ export class StatisticsService {
         unlocked: onTimePercentage > 50
       },
       {
-        id: 'frequent_flyer',
-        title: 'Frequent Flyer',
-        description: 'Arrive 50 times',
-        icon: '✈️',
-        unlocked: entries.length >= 50
+        id: 'the_one_percent',
+        title: 'The 1%',
+        description: 'Maintain an on-time rate above 90%',
+        icon: '💎',
+        unlocked: onTimePercentage >= 90 && entries.length >= 20
       }
     ];
 
@@ -301,18 +374,27 @@ export class StatisticsService {
   private getDefaultAchievements(): Achievement[] {
     return [
       { id: 'first_appearance', title: 'First Appearance', description: 'Arrive for the first time', icon: '👣', unlocked: false },
+      { id: 'double_digits', title: 'Double Digits', description: 'Arrive 10 times', icon: '🔟', unlocked: false },
+      { id: 'quarter_century', title: 'Quarter Century', description: 'Arrive 25 times', icon: '🥉', unlocked: false },
+      { id: 'frequent_flyer', title: 'Frequent Flyer', description: 'Arrive 50 times', icon: '✈️', unlocked: false },
+      { id: 'silver_jubilee', title: 'Silver Jubilee', description: 'Arrive 75 times', icon: '🥈', unlocked: false },
+      { id: 'centurion', title: 'Centurion', description: 'Arrive 100 times', icon: '🥇', unlocked: false },
       { id: 'on_time_hero', title: 'On-Time Hero', description: 'Arrive within 5 minutes of world time', icon: '🦸', unlocked: false },
       { id: 'streak_3', title: 'Hat Trick', description: '3 on-time arrivals in a row', icon: '🎩', unlocked: false },
       { id: 'streak_5', title: 'High Five', description: '5 on-time arrivals in a row', icon: '🖐️', unlocked: false },
       { id: 'streak_7', title: 'Week of Wonder', description: '7 on-time arrivals in a row', icon: '🌈', unlocked: false },
       { id: 'early_bird', title: 'Early Bird', description: 'Arrive exactly on time (0 min delay)', icon: '🐦', unlocked: false },
+      { id: 'sniper', title: 'Sniper', description: 'Arrive exactly on time 3 times', icon: '🎯', unlocked: false },
       { id: 'miracle', title: 'Miracle', description: 'Arrive early (before world time)', icon: '✨', unlocked: false },
       { id: 'swiss_precision', title: 'Swiss Precision', description: 'Arrive on time twice in one day', icon: '⌚', unlocked: false },
       { id: 'morning_person', title: 'Morning Person', description: 'Arrive on time before 10 AM', icon: '☀️', unlocked: false },
       { id: 'night_owl', title: 'Night Owl', description: 'Arrive on time after 10 PM', icon: '🦉', unlocked: false },
+      { id: 'never_late_for_food', title: 'Never late for food.', description: 'Arrive on time 3 times between 12 PM and 2 PM', icon: '🍕', unlocked: false },
       { id: 'weekend_warrior', title: 'Weekend Warrior', description: 'Arrive on time on a Friday or Saturday', icon: '🛡️', unlocked: false },
+      { id: 'temporal_tourist', title: 'Temporal Tourist', description: 'Arrive on time in 5 different hours of the day', icon: '🗺️', unlocked: false },
+      { id: 'reformed_character', title: 'Reformed Character', description: 'Show an improving arrival trend', icon: '📈', unlocked: false },
       { id: 'we_believe_you', title: 'We Believe You Now', description: 'On-time rate exceeds 50%', icon: '🤝', unlocked: false },
-      { id: 'frequent_flyer', title: 'Frequent Flyer', description: 'Arrive 50 times', icon: '✈️', unlocked: false }
+      { id: 'the_one_percent', title: 'The 1%', description: 'Maintain an on-time rate above 90%', icon: '💎', unlocked: false }
     ];
   }
 }
