@@ -7,11 +7,20 @@
  */
 
 import dotenv from 'dotenv';
+const result = dotenv.config();
+
 import { app } from './app';
 import { initializeDatabase } from './database/sqlite';
 import { logger } from './utils/logger';
 
-dotenv.config();
+if (result.error) {
+  logger.error('Failed to load .env file:', result.error);
+} else {
+  logger.info('.env file loaded successfully');
+}
+
+logger.info('Current working directory:', process.cwd());
+logger.info('DELETE_PASSWORD set:', !!process.env.DELETE_PASSWORD);
 
 // Server port
 const PORT = process.env.PORT || 3000;

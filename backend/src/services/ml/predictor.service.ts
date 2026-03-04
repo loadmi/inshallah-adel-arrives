@@ -7,6 +7,7 @@
 
 import * as tf from '@tensorflow/tfjs';
 import { PredictionResponse } from '../../models/prediction.model';
+import { StatedActivity } from '../../models/time-entry.model';
 import { timeEntryRepository } from '../../database/repositories/time-entry.repository';
 import { featureEngineeringService } from './feature-engineering.service';
 import { modelStorageService } from './model-storage.service';
@@ -21,13 +22,16 @@ export class PredictorService {
     this.model = await modelStorageService.loadModel();
   }
 
-  async predict(worldTime: Date): Promise<PredictionResponse> {
+  async predict(worldTime: Date, statedActivity?: StatedActivity): Promise<PredictionResponse> {
     const entryCount = timeEntryRepository.count();
 
     // Not enough data - use median fallback
     if (entryCount < ML_CONFIG.training.minSamples) {
+      logger.info(`Using fallback prediction (entryCount: ${entryCount}, minSamples: ${ML_CONFIG.training.minSamples})`);
       return this.fallbackPrediction(worldTime, entryCount);
     }
+
+    logger.info(`Using ML model prediction (entryCount: ${entryCount}, minSamples: ${ML_CONFIG.training.minSamples})`);
 
     // Ensure model is loaded/trained
     if (!this.model) {
@@ -35,7 +39,7 @@ export class PredictorService {
     }
 
     // Extract features
-    const features = featureEngineeringService.extractFeaturesFromDate(worldTime);
+    const features = featureEngineeringService.extractFeaturesFromDate(worldTime, statedActivity);
     const featureTensor = tf.tensor2d([features]);
 
     // Predict
@@ -76,7 +80,7 @@ export class PredictorService {
         continue;
       }
 
-      // Extract features
+      // Extract features (batch prediction doesn't support statedActivity yet in this implementation)
       const features = featureEngineeringService.extractFeaturesFromDate(worldTime);
       const featureTensor = tf.tensor2d([features]);
 
@@ -176,9 +180,11 @@ export class PredictorService {
     const entries = timeEntryRepository.findAll();
     const hour = worldTime.getHours();
     
-    const similarEntries = entries.filter(e => 
-      Math.abs(e.hourOfDay - hour) <= 2
-    );
+    const similarEntries = entries.filter(e => {
+      const diff = Math.abs(e.hourOfDay - hour);
+      // Account for 24-hour wrap-around (e.g. 23:00 and 01:00 are 2 hours apart)
+      return diff <= 2 || diff >= 22;
+    });
 
     if (similarEntries.length === 0) {
       return undefined;

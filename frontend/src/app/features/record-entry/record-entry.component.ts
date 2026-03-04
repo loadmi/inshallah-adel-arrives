@@ -9,7 +9,10 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { AdelTimeService } from '../../core/services/adel-time.service';
-import { LateReason, VALID_LATE_REASONS, LATE_REASON_LABELS } from '../../core/models/time-entry.model';
+import { 
+  LateReason, VALID_LATE_REASONS, LATE_REASON_LABELS,
+  StatedActivity, VALID_STATED_ACTIVITIES, STATED_ACTIVITY_LABELS 
+} from '../../core/models/time-entry.model';
 import { SharedSecretModalComponent } from '../../shared/components/shared-secret-modal/shared-secret-modal.component';
 
 @Component({
@@ -26,6 +29,7 @@ export class RecordEntryComponent {
   worldTime = signal('');
   adelTime = signal('');
   reason = signal<LateReason | ''>('');
+  statedActivity = signal<StatedActivity | ''>('');
   loading = signal(false);
   success = signal(false);
   error = signal('');
@@ -34,6 +38,8 @@ export class RecordEntryComponent {
   // Expose constants to template
   readonly validReasons = VALID_LATE_REASONS;
   readonly reasonLabels = LATE_REASON_LABELS;
+  readonly validActivities = VALID_STATED_ACTIVITIES;
+  readonly activityLabels = STATED_ACTIVITY_LABELS;
 
   onVerified() {
     this.isVerified.set(true);
@@ -52,7 +58,8 @@ export class RecordEntryComponent {
       await firstValueFrom(this.adelTimeService.createEntry({
         worldTime: new Date(this.worldTime()).toISOString(),
         adelTime: new Date(this.adelTime()).toISOString(),
-        reason: this.reason() || undefined
+        reason: this.reason() || undefined,
+        statedActivity: this.statedActivity() || undefined
       }));
 
       this.success.set(true);
@@ -62,6 +69,7 @@ export class RecordEntryComponent {
         this.worldTime.set('');
         this.adelTime.set('');
         this.reason.set('');
+        this.statedActivity.set('');
         this.success.set(false);
       }, 2000);
 

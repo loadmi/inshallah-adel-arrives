@@ -26,7 +26,8 @@ const corsOrigin = process.env.CORS_ORIGIN
 
 app.use(cors({
   origin: corsOrigin,
-  credentials: true
+  credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-delete-password']
 }));
 
 // Body parsing

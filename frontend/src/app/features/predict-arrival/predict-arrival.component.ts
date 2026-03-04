@@ -10,6 +10,7 @@ import { firstValueFrom } from 'rxjs';
 import { AdelTimeService } from '../../core/services/adel-time.service';
 import { DateUtilsService } from '../../core/services/date-utils.service';
 import { PredictionResponse } from '../../core/models/prediction.model';
+import { StatedActivity, VALID_STATED_ACTIVITIES, STATED_ACTIVITY_LABELS } from '../../core/models/time-entry.model';
 
 @Component({
   selector: 'app-predict-arrival',
@@ -25,6 +26,9 @@ export class PredictArrivalComponent implements OnInit {
   /** User-selected world time input */
   worldTime = signal('');
   
+  /** User-selected stated activity */
+  statedActivity = signal<StatedActivity | ''>('');
+  
   /** Prediction response from the API */
   prediction = signal<PredictionResponse | null>(null);
   
@@ -33,6 +37,10 @@ export class PredictArrivalComponent implements OnInit {
   
   /** Error message to display */
   error = signal('');
+
+  // Expose constants to template
+  readonly validActivities = VALID_STATED_ACTIVITIES;
+  readonly activityLabels = STATED_ACTIVITY_LABELS;
 
   private predictTimeout: any;
 
@@ -51,6 +59,7 @@ export class PredictArrivalComponent implements OnInit {
   resetToNow(): void {
     const now = new Date();
     this.worldTime.set(this.dateUtilsService.toLocalDateTimeString(now));
+    this.statedActivity.set('');
     this.predict();
   }
 
@@ -74,7 +83,10 @@ export class PredictArrivalComponent implements OnInit {
 
       try {
         const result = await firstValueFrom(
-          this.adelTimeService.getPrediction(new Date(this.worldTime()))
+          this.adelTimeService.getPrediction(
+            new Date(this.worldTime()),
+            this.statedActivity() || undefined
+          )
         );
 
         this.prediction.set(result);

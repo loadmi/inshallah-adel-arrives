@@ -52,6 +52,19 @@
         <h3 class="section-title">Additional Information</h3>
         
         <div class="form-group">
+          <label for="statedActivity">
+            <span class="label-text">Stated Activity</span>
+            <span class="label-hint">What he said he was doing (Optional)</span>
+          </label>
+          <select id="statedActivity" [(ngModel)]="statedActivity" name="statedActivity" class="form-select">
+            <option value="">Select activity</option>
+            @for (activityValue of validActivities; track activityValue) {
+              <option [value]="activityValue">{{ activityLabels[activityValue] }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group">
           <label for="reason">
             <span class="label-text">Reason for being late</span>
             <span class="label-hint">Optional</span>

@@ -19,7 +19,7 @@ class PredictionsController {
         return res.status(400).json(errorResponse('Invalid date format'));
       }
 
-      const prediction = await predictorService.predict(worldTime);
+      const prediction = await predictorService.predict(worldTime, input.statedActivity);
       
       res.json(successResponse(prediction));
     } catch (error) {

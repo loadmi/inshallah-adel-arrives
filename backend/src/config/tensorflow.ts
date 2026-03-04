@@ -17,17 +17,18 @@ export const ML_CONFIG = {
   },
   
   features: {
-    // Feature descriptions (6 total):
+    // Feature descriptions (15 total):
     // [0] hourSin              - sin(2π * hour / 24)
     // [1] hourCos              - cos(2π * hour / 24)
     // [2] daySin               - sin(2π * dayOfWeek / 7)
     // [3] dayCos               - cos(2π * dayOfWeek / 7)
     // [4] isWeekend            - 0 or 1
     // [5] rollingAvgDelay      - normalized [0, 1]
+    // [6-14] statedActivity    - one-hot encoded (9 options)
   },
   
   modelArchitecture: {
-    inputSize: 6,  // [hourSin, hourCos, daySin, dayCos, isWeekend, rollingAvgDelay]
+    inputSize: 15,  // [hourSin, hourCos, daySin, dayCos, isWeekend, rollingAvgDelay, ...statedActivity]
     hiddenLayers: [32, 16, 8],
     outputSize: 1  // delay in minutes
   }

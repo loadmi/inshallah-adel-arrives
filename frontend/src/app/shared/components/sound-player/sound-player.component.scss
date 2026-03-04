@@ -1,0 +1,187 @@
+/* ==========================================================================
+   Sound Player Component Styles
+   Floating sound button with expandable player panel
+   ========================================================================== */
+
+:host {
+  display: block;
+  position: fixed;
+  bottom: 70px; // Above the footer (56px + 14px gap)
+  left: 16px;
+  z-index: var(--z-fixed);
+
+  @media (max-width: 480px) {
+    bottom: 62px;
+    left: 12px;
+  }
+}
+
+/* --- Sound Player Container --- */
+.sound-player {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--spacing-3);
+}
+
+/* --- Toggle Button --- */
+.sound-toggle-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full);
+  background-color: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-md);
+  flex-shrink: 0;
+
+  &:hover {
+    background-color: var(--bg-surface);
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+    transform: scale(1.05);
+    box-shadow: var(--shadow-lg);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  &.active {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--text-primary);
+    box-shadow: 0 0 16px rgba(98, 0, 238, 0.4);
+
+    &:hover {
+      background-color: var(--color-primary-hover);
+      border-color: var(--color-primary-hover);
+    }
+  }
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+/* --- Player Panel --- */
+.player-panel {
+  background-color: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-3) var(--spacing-4);
+  box-shadow: var(--shadow-lg);
+  width: 280px;
+  animation: slideIn 0.25s ease-out;
+
+  @media (max-width: 480px) {
+    width: 240px;
+    padding: var(--spacing-2) var(--spacing-3);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-12px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+/* --- Player Controls --- */
+.player-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+/* --- Play/Pause Button --- */
+.play-pause-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-accent);
+  color: var(--bg-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+  border: none;
+
+  &:hover {
+    background-color: var(--color-accent-hover);
+    transform: scale(1.1);
+  }
+
+  &:active {
+    transform: scale(0.9);
+  }
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+/* --- Progress Bar --- */
+.progress-wrapper {
+  flex: 1;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.progress-track {
+  width: 100%;
+  height: 4px;
+  background-color: var(--bg-surface);
+  border-radius: var(--radius-full);
+  position: relative;
+  overflow: visible;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-accent), var(--color-primary-light));
+  border-radius: var(--radius-full);
+  transition: width 0.1s linear;
+}
+
+.progress-thumb {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-accent);
+  box-shadow: 0 0 4px rgba(187, 134, 252, 0.5);
+  transition: left 0.1s linear;
+
+  .progress-wrapper:hover & {
+    width: 12px;
+    height: 12px;
+    box-shadow: 0 0 8px rgba(187, 134, 252, 0.7);
+  }
+}
+
+/* --- Time Display --- */
+.time-display {
+  font-size: var(--font-size-xs);
+  font-family: var(--font-family-mono);
+  color: var(--text-tertiary);
+  min-width: 36px;
+  text-align: right;
+  flex-shrink: 0;
+  user-select: none;
+}

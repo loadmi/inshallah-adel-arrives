@@ -26,6 +26,24 @@
             />
           </div>
         </div>
+
+        <div class="form-group">
+          <label for="statedActivity" class="input-label">What is Adel doing?</label>
+          <div class="input-wrapper">
+            <span class="input-icon">🏃</span>
+            <select
+              id="statedActivity"
+              class="time-input"
+              [(ngModel)]="statedActivity"
+              (ngModelChange)="predict()"
+            >
+              <option value="">Select activity (Optional)</option>
+              @for (activityValue of validActivities; track activityValue) {
+                <option [value]="activityValue">{{ activityLabels[activityValue] }}</option>
+              }
+            </select>
+          </div>
+        </div>
         
         <div class="action-buttons">
           <button class="btn btn-secondary reset-btn" (click)="resetToNow()">

@@ -3,7 +3,7 @@
  */
 
 import { getDatabase, saveDatabase } from '../sqlite';
-import { TimeEntry, CreateTimeEntryDTO, LateReason } from '../../models/time-entry.model';
+import { TimeEntry, CreateTimeEntryDTO, LateReason, StatedActivity } from '../../models/time-entry.model';
 
 export class TimeEntryRepository {
   
@@ -14,8 +14,8 @@ export class TimeEntryRepository {
       INSERT INTO entries (
         world_time, adel_time, delay_minutes,
         hour_of_day, day_of_week, minutes_since_midnight,
-        reason, created_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        reason, stated_activity, created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `, [
       entry.worldTime.toISOString(),
       entry.adelTime.toISOString(),
@@ -24,6 +24,7 @@ export class TimeEntryRepository {
       entry.dayOfWeek,
       entry.minutesSinceMidnight,
       entry.reason || null,
+      entry.statedActivity || null,
       new Date().toISOString()
     ]);
 
@@ -102,6 +103,7 @@ export class TimeEntryRepository {
       dayOfWeek: obj.day_of_week,
       minutesSinceMidnight: obj.minutes_since_midnight,
       reason: obj.reason as LateReason | undefined,
+      statedActivity: obj.stated_activity as StatedActivity | undefined,
       createdAt: new Date(obj.created_at)
     };
   }

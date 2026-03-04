@@ -19,6 +19,7 @@ export const DATABASE_CONFIG = {
         day_of_week INTEGER NOT NULL,
         minutes_since_midnight INTEGER NOT NULL,
         reason TEXT,
+        stated_activity TEXT,
         created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
       )
     `,

@@ -39,7 +39,8 @@ class EntriesController {
         hourOfDay,
         dayOfWeek,
         minutesSinceMidnight,
-        reason: input.reason
+        reason: input.reason,
+        statedActivity: input.statedActivity
       };
 
       // Save entry
@@ -85,10 +86,11 @@ class EntriesController {
   async delete(req: Request, res: Response, next: NextFunction) {
     try {
       // Verify delete password
-      const password = req.headers['x-delete-password'] as string;
-      const requiredPassword = process.env.DELETE_PASSWORD;
+      const password = (req.headers['x-delete-password'] as string || '').trim();
+      const requiredPassword = (process.env.DELETE_PASSWORD || '').trim();
 
       if (!requiredPassword || password !== requiredPassword) {
+        logger.warn(`Delete attempt with invalid password. Received: "${password}", Expected: "${requiredPassword}"`);
         return res.status(403).json(errorResponse('Invalid delete password'));
       }
 

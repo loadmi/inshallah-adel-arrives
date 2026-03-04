@@ -4,7 +4,10 @@
  * - Sanitize strings
  */
 
-import { TimeEntryInput, LateReason, VALID_LATE_REASONS } from '../models/time-entry.model';
+import { 
+  TimeEntryInput, LateReason, VALID_LATE_REASONS,
+  StatedActivity, VALID_STATED_ACTIVITIES 
+} from '../models/time-entry.model';
 import { PredictionRequest } from '../models/prediction.model';
 
 export class ValidationService {
@@ -33,12 +36,21 @@ export class ValidationService {
       };
     }
 
+    // Validate statedActivity if provided
+    if (input.statedActivity && !VALID_STATED_ACTIVITIES.includes(input.statedActivity as StatedActivity)) {
+      return { 
+        valid: false, 
+        error: `Invalid statedActivity. Must be one of: ${VALID_STATED_ACTIVITIES.join(', ')}` 
+      };
+    }
+
     return {
       valid: true,
       data: {
         worldTime: input.worldTime,
         adelTime: input.adelTime,
-        reason: input.reason
+        reason: input.reason,
+        statedActivity: input.statedActivity
       }
     };
   }
@@ -54,10 +66,19 @@ export class ValidationService {
       return { valid: false, error: 'Invalid worldTime format' };
     }
 
+    // Validate statedActivity if provided
+    if (input.statedActivity && !VALID_STATED_ACTIVITIES.includes(input.statedActivity as StatedActivity)) {
+      return { 
+        valid: false, 
+        error: `Invalid statedActivity. Must be one of: ${VALID_STATED_ACTIVITIES.join(', ')}` 
+      };
+    }
+
     return {
       valid: true,
       data: {
-        worldTime: input.worldTime
+        worldTime: input.worldTime,
+        statedActivity: input.statedActivity
       }
     };
   }

@@ -94,6 +94,7 @@ function runMigrations(): void {
     // Check if we have the old schema (event_type/notes) but not the new (reason)
     const hasOldSchema = columns.includes('event_type') || columns.includes('notes');
     const hasReasonColumn = columns.includes('reason');
+    const hasStatedActivityColumn = columns.includes('stated_activity');
 
     // Migration: Add reason column if it doesn't exist
     if (!hasReasonColumn) {
@@ -107,6 +108,13 @@ function runMigrations(): void {
       }
       
       logger.info('Migration completed: reason column added');
+    }
+
+    // Migration: Add stated_activity column if it doesn't exist
+    if (!hasStatedActivityColumn) {
+      logger.info('Running migration: Adding stated_activity column to entries table');
+      db.run('ALTER TABLE entries ADD COLUMN stated_activity TEXT');
+      logger.info('Migration completed: stated_activity column added');
     }
 
     // Note: SQLite doesn't support DROP COLUMN in older versions,

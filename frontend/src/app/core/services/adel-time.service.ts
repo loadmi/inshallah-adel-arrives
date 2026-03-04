@@ -8,7 +8,8 @@ import { Observable, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
   TimeEntry,
-  CreateTimeEntryRequest
+  CreateTimeEntryRequest,
+  StatedActivity
 } from '../models/time-entry.model';
 import {
   PredictionRequest,
@@ -45,9 +46,10 @@ export class AdelTimeService {
   }
 
   // Predictions
-  getPrediction(worldTime: Date): Observable<PredictionResponse> {
+  getPrediction(worldTime: Date, statedActivity?: StatedActivity): Observable<PredictionResponse> {
     const request: PredictionRequest = {
-      worldTime: worldTime.toISOString()
+      worldTime: worldTime.toISOString(),
+      statedActivity
     };
 
     return this.http.post<ApiResponse<PredictionResponse>>(

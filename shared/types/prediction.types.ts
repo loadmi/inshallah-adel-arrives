@@ -3,8 +3,11 @@
  * Used by both frontend and backend
  */
 
+import { StatedActivity } from './time-entry.types';
+
 export interface PredictionRequest {
   worldTime: string;  // ISO date string
+  statedActivity?: StatedActivity;
 }
 
 export interface BatchPredictionRequest {

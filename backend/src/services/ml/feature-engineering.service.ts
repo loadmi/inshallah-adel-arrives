@@ -5,7 +5,7 @@
  * - Prepare data for training/prediction
  */
 
-import { TimeEntry } from '../../models/time-entry.model';
+import { TimeEntry, StatedActivity, VALID_STATED_ACTIVITIES } from '../../models/time-entry.model';
 import { timeEntryRepository } from '../../database/repositories/time-entry.repository';
 
 export class FeatureEngineeringService {
@@ -19,6 +19,7 @@ export class FeatureEngineeringService {
    *   [3] dayCos        - cos(2π * dayOfWeek / 7)
    *   [4] isWeekend     - 1 if Saturday/Sunday, 0 otherwise
    *   [5] rollingAvgDelay - rolling average delay of last N entries (normalized)
+   *   [6-14] statedActivity - one-hot encoded
    */
   extractFeatures(entry: TimeEntry): number[] {
     const rollingAvg = this.getRollingAverageDelay();
@@ -27,11 +28,12 @@ export class FeatureEngineeringService {
       ...this.cyclicalHour(entry.hourOfDay),
       ...this.cyclicalDay(entry.dayOfWeek),
       this.isWeekend(entry.dayOfWeek),
-      this.normalizeDelay(rollingAvg)
+      this.normalizeDelay(rollingAvg),
+      ...this.oneHotActivity(entry.statedActivity)
     ];
   }
 
-  extractFeaturesFromDate(date: Date): number[] {
+  extractFeaturesFromDate(date: Date, statedActivity?: StatedActivity): number[] {
     const hourOfDay = date.getHours();
     const dayOfWeek = date.getDay();
     const rollingAvg = this.getRollingAverageDelay();
@@ -40,7 +42,8 @@ export class FeatureEngineeringService {
       ...this.cyclicalHour(hourOfDay),
       ...this.cyclicalDay(dayOfWeek),
       this.isWeekend(dayOfWeek),
-      this.normalizeDelay(rollingAvg)
+      this.normalizeDelay(rollingAvg),
+      ...this.oneHotActivity(statedActivity)
     ];
   }
 
@@ -70,7 +73,8 @@ export class FeatureEngineeringService {
         ...this.cyclicalHour(entry.hourOfDay),
         ...this.cyclicalDay(entry.dayOfWeek),
         this.isWeekend(entry.dayOfWeek),
-        this.normalizeDelay(rollingAvg)
+        this.normalizeDelay(rollingAvg),
+        ...this.oneHotActivity(entry.statedActivity)
       ];
 
       features.push(feature);
@@ -78,6 +82,20 @@ export class FeatureEngineeringService {
     }
     
     return { features, labels };
+  }
+
+  /**
+   * One-hot encoding for stated activity.
+   */
+  private oneHotActivity(activity?: StatedActivity): number[] {
+    const vector = new Array(VALID_STATED_ACTIVITIES.length).fill(0);
+    if (!activity) return vector;
+
+    const index = VALID_STATED_ACTIVITIES.indexOf(activity);
+    if (index !== -1) {
+      vector[index] = 1;
+    }
+    return vector;
   }
 
   /**
